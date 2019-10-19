@@ -46,7 +46,7 @@ def sortList(list) :
 
 # ------ Neighborhood ------ #
 
-def getValidPositiveNeighbor(state, states_list, max_size) :
+def getValidPositiveNeighbor(VT, state, states_list, max_size) :
     for i in range(0, len(state)):
         state_aux = state.copy()
         state_aux[i] += 1
@@ -54,7 +54,7 @@ def getValidPositiveNeighbor(state, states_list, max_size) :
             states_list.append(state_aux)
 
 def defineValidNeighborhood(VT, state, states_list, max_size) :
-    getValidPositiveNeighbor(state, states_list, max_size)
+    getValidPositiveNeighbor(VT, state, states_list, max_size)
 
 def getPositiveNeighbor(state, states_list) :
     for i in range(0, len(state)):
@@ -96,13 +96,12 @@ def hill_climbing_roulette(VT, max_size, states_list) :
 
 # ------ Local Search ------ #
 
-def simple_descent(VT, T, best_state_trivial, states_list) :
-    best_value = 0
-    best_state = [0] * len(VT)
+def deepest_descent(VT, T, best_state_trivial, states_list) :
+    best_state = best_state_trivial
+    best_value = getValueState(VT, best_state_trivial)
     while(True) :
         find_best = False
         defineNeighborhood(VT, best_state, states_list)
-        shuffle(states_list)
         while(states_list != []) :
             state = states_list.pop()
             if(T >= getSizeState(VT, state)):
@@ -125,7 +124,7 @@ def grasp(VT, max_size, states_list, max_iteration) :
     best_state = [0] * len(VT)
     for _ in range(max_iteration) :
         state = greedy_random_construct(VT, max_size, states_list)
-        state_local = simple_descent(VT, max_size, state, states_list)
+        state_local = deepest_descent(VT, max_size, state, states_list)
         state_local_value = getValueState(VT, state_local)
         if getSizeState(VT, state_local) <= max_size :
             if state_local_value > best_value :
@@ -138,7 +137,7 @@ def grasp(VT, max_size, states_list, max_iteration) :
 # Max size
 max_size = 19
 # Max iteration
-max_iteration = 50
+max_iteration = 5
 # Object array
 VT = [(1, 3), (4, 6), (5, 7)]
 states_list = []

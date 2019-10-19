@@ -75,9 +75,9 @@ def defineNeighborhood(VT, state, states_list) :
     getPositiveNeighbor(state, states_list)
     getNegativeNeighbor(state, states_list)   
 
-def deepest_descent(VT, T, states_list) :
-    best_state = generateRandomState(VT, T)
-    best_value = getValueState(VT, best_state)
+def deepest_descent(VT, T, best_state_trivial, states_list) :
+    best_state = best_state_trivial
+    best_value = getValueState(VT, best_state_trivial)
     while(True) :
         find_best = False
         defineNeighborhood(VT, best_state, states_list)
@@ -104,7 +104,7 @@ best_state_trivial = hillClimbing(VT, states, T)
 
 # Deepest descent
 states_list = []
-best_state_deepest = deepest_descent(VT, T, states_list)
+best_state_deepest = deepest_descent(VT, T, best_state_trivial, states_list)
 
 # Results
 total_value_trivial = getValueState(VT, best_state_trivial)

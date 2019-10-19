@@ -1,5 +1,6 @@
 # ----- Dhiego Santos Broetto ----- #
 # ---------- 2016204404 ----------- #
+import timeit
 
 def getValueState(VT, states) :
     total_value = 0
@@ -51,12 +52,18 @@ def addStateList(VT, states, T, states_list, queue_size) :
     for i in range(len(states)) :
         states[i] += 1
         if(getValidState(VT, states, T)) :
-            if(len(states_list) <= queue_size) :
+            if(len(states_list) < queue_size) :
                 addToList(VT, states, states_list)
+            else :
+                sortList(states_list)
+                if(states_list[0][1] < getValueState(VT, states)) :
+                    states_list.pop(0)
+                    addToList(VT, states, states_list)
         states[i] -= 1
     sortList(states_list)
 
-def beam_search(VT, T, states_list, queue_size) :
+def beam_search(VT, T, queue_size, timer = 0) :
+    states_list = []
     best_state = [0] * len(VT)
     addStateList(VT, best_state, T, states_list, queue_size)
     while(states_list != []) :
@@ -64,38 +71,48 @@ def beam_search(VT, T, states_list, queue_size) :
         if(state[1] >= getValueState(VT, best_state)) :
             best_state = state[0].copy()
         addStateList(VT, state[0], T, states_list, queue_size)
+        if timer != 0 and (timeit.default_timer() - timer) > 120 :
+            print("Beam Search exceeded time limit (120 seconds)\n")
+            break
+        
     return best_state
 
 def addToList(VT, state, states_list) :
     state_copy = state.copy()
-    states_list.append([state_copy, getValueState(VT, state), getSizeState(VT, state)])
+    state_aux = [state_copy, getValueState(VT, state), getSizeState(VT, state)]
+    if state_aux not in states_list :
+        states_list.append(state_aux)
+    # else :
+    #     print("existe")
 
 def sortList(states_list) :
     states_list.sort(key = lambda pos: pos[1], reverse = False)
 
-# Max size
-T = 19 
-# Objects array
-VT = [(1, 3), (4, 6), (5, 7)]
+# # Max size
+# T = 19 
+# # Objects array
+# VT = [(1, 3), (4, 6), (5, 7)]
+# T = 58
+# VT = [(1,3),(4,6),(5,7),(3,4),(8,10),(4,8),(3,5),(6,9)]
 
-# Trivial solution
-states = [0] * len(VT)
-best_state_trivial = hillClimbing(VT, states, T)
+# # Trivial solution
+# states = [0] * len(VT)
+# best_state_trivial = hillClimbing(VT, states, T)
 
-# Beam search
-states_list = []
-queue_size = 5
-best_state_beam = beam_search(VT, T, states_list, queue_size)
+# # Beam search
+# states_list = []
+# queue_size = 3
+# best_state_beam = beam_search(VT, T, queue_size)
 
-# Results
-total_value_trivial = getValueState(VT, best_state_trivial)
-total_size_trivial = getSizeState(VT, best_state_trivial)
+# # Results
+# total_value_trivial = getValueState(VT, best_state_trivial)
+# total_size_trivial = getSizeState(VT, best_state_trivial)
 
-total_value_beam = getValueState(VT, best_state_beam)
-total_size_beam = getSizeState(VT, best_state_beam)
+# total_value_beam = getValueState(VT, best_state_beam)
+# total_size_beam = getSizeState(VT, best_state_beam)
 
-print("Trivial Solution")
-print ("[Total Value => ", total_value_trivial, ", Total Size => ", total_size_trivial, ", Best State => ", best_state_trivial)
+# print("Trivial Solution")
+# print ("[Total Value => ", total_value_trivial, ", Total Size => ", total_size_trivial, ", Best State => ", best_state_trivial)
 
-print("Beam Search")
-print ("[Total Value => ", total_value_beam, ", Total Size => ", total_size_beam, ", Best State => ", best_state_beam)
+# print("Beam Search")
+# print ("[Total Value => ", total_value_beam, ", Total Size => ", total_size_beam, ", Best State => ", best_state_beam)

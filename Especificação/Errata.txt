@@ -1,0 +1,8 @@
+2º - No algoritmo de treino a geração de boxplot da metaheuristica é somente para as 10 melhores combinações de hiperparâmetros.
+ 
+32º - Redução da quantidade de hiperparâmetros para o Simulated Annealing.
+ 
+ 
+To: 500, 100, 50
+alfa: 0.95, 0.85, 0.7
+numIter: 350, 500

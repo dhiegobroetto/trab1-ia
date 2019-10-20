@@ -67,7 +67,7 @@ for beam_hp in beam_search_hyperparams :
     print("Begin HP => ", beam_hp)
     for param in params :
         start = timeit.default_timer()
-        state = sa(param['vt'], param['t'], beam_hp, start)
+        state = bs(param['vt'], param['t'], beam_hp, start)
         stop = timeit.default_timer()
         state_value = getValueState(param['vt'], state)
         results_beam_param.append({'value': state_value, 'time': (stop - start)})

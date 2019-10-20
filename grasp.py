@@ -4,6 +4,7 @@
 from random import shuffle
 import math
 import random
+import timeit
 
 def getValueState(VT, states) :
     total_value = 0
@@ -25,14 +26,24 @@ def getValidState(VT, states, max_size) :
 
 # ------ Roulette ------ #
 
-def roulette(VT, states) :
+def roulette(VT, states, best_element) :
     total = 0
-    states_aux = []
-    for i in range(0, len(states)) :
-        total += getValueState(VT, states[i])
-    for i in range(0, len(states)) :
-        states_aux.append([states[i],(getValueState(VT, states[i]) / total)])
+    states_aux = states.copy()
+
+    for i in range(len(states_aux)) :
+        states_aux[i] = [states_aux[i], getValueState(VT, states_aux[i])]
+    states_aux.sort(key = lambda pos: pos[1], reverse = True)
+    states_best = states_aux[0:best_element].copy()
+    for i in range(len(states_best)) :
+        states_best[i] = states_best[i][0]
+
+    for i in range(0, len(states_best)) :
+        total += getValueState(VT, states_best[i])
+    
+    for i in range(0, len(states_best)) :
+        states_aux.append([states_best[i],(getValueState(VT, states_best[i]) / total)])
     sortList(states_aux)
+    
     rand = random.uniform(0, 1)
     percent = 0
     for i in range(0, len(states_aux)) :
@@ -75,14 +86,14 @@ def defineNeighborhood(VT, state, states_list) :
 
 # ------ Hill Climbing ------ #
 
-def hill_climbing_roulette(VT, max_size, states_list) :
+def hill_climbing_roulette(VT, max_size, states_list, best_element) :
     best_value = 0
     best_state = [0] * len(VT)
     while(True) :
         find_best = False
         defineValidNeighborhood(VT, best_state, states_list, max_size)
         while(len(states_list) > 0) :
-            state = roulette(VT, states_list)
+            state = roulette(VT, states_list, best_element)
             states_list.remove(state)
             state_value = getValueState(VT, state)
             if state_value > best_value :
@@ -116,37 +127,42 @@ def deepest_descent(VT, T, best_state_trivial, states_list) :
 
 # ------ GRASP ------ #
 
-def greedy_random_construct(VT, max_size, states_list) :
-    return hill_climbing_roulette(VT, max_size, states_list)
+def greedy_random_construct(VT, max_size, states_list, best_element) :
+    return hill_climbing_roulette(VT, max_size, states_list, best_element)
 
-def grasp(VT, max_size, states_list, max_iteration) :
+def grasp(VT, max_size, best_element, max_iteration, timer = 0) :
     best_value = 0
     best_state = [0] * len(VT)
+    states_list = []
     for _ in range(max_iteration) :
-        state = greedy_random_construct(VT, max_size, states_list)
+        state = greedy_random_construct(VT, max_size, states_list, best_element)
         state_local = deepest_descent(VT, max_size, state, states_list)
         state_local_value = getValueState(VT, state_local)
         if getSizeState(VT, state_local) <= max_size :
             if state_local_value > best_value :
                 best_value = state_local_value
                 best_state = state_local
+        if timer != 0 and (timeit.default_timer() - timer) > 120 :
+            print("GRASP exceeded time limit (120 seconds)\n")
+            break
     return best_state
 
 # ------ Program ------ #
 
-# Max size
-max_size = 19
-# Max iteration
-max_iteration = 5
-# Object array
-VT = [(1, 3), (4, 6), (5, 7)]
-states_list = []
+# # Max size
+# max_size = 19
+# # Max iteration
+# max_iteration = 5
+# best_element = 2
+# # Object array
+# VT = [(1, 3), (4, 6), (5, 7)]
+# states_list = []
 
-best_state_grasp = grasp(VT, max_size, states_list, max_iteration)
+# best_state_grasp = grasp(VT, max_size, best_element, max_iteration)
 
-# Results
-total_value_grasp = getValueState(VT, best_state_grasp)
-total_size_grasp = getSizeState(VT, best_state_grasp)
+# # Results
+# total_value_grasp = getValueState(VT, best_state_grasp)
+# total_size_grasp = getSizeState(VT, best_state_grasp)
 
-print("GRASP")
-print ("[Total Value => ", total_value_grasp, ", Total Size => ", total_size_grasp, ", Best State => ", best_state_grasp)
+# print("GRASP")
+# print ("[Total Value => ", total_value_grasp, ", Total Size => ", total_size_grasp, ", Best State => ", best_state_grasp)

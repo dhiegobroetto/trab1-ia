@@ -45,9 +45,10 @@ def probabilityState(worst_case, state, t) :
     r = random.uniform(0, 1)
     return r < p
 
-def simulated_annealing(VT, max_size, t, alpha, states_list, max_iteration, timer = 0) :
+def simulated_annealing(VT, max_size, t, alpha, max_iteration, timer = 0) :
     best_value = 0
     best_state = []
+    states_list = []
     iterate_value = 0
     iterate_state = [0] * len(VT)
     while(t >= 1) :
@@ -68,10 +69,11 @@ def simulated_annealing(VT, max_size, t, alpha, states_list, max_iteration, time
                         iterate_value = getValueState(VT, state)
                         iterate_state = state
             if timer != 0 and (timeit.default_timer() - timer) > 120 :
-                print("Simulated Annealing exceeded time limit (120 seconds)\n")
                 break
-
         t = alpha * t
+        if timer != 0 and (timeit.default_timer() - timer) > 120 :
+            print("Simulated Annealing exceeded time limit (120 seconds)\n")
+            break
     return best_state
 
 # # Max size
@@ -84,7 +86,7 @@ def simulated_annealing(VT, max_size, t, alpha, states_list, max_iteration, time
 
 # # Simulated Annealing
 # states_list = []
-# best_simulated_annealing = simulated_annealing(VT, max_size, t, alpha, states_list, max_iteration)
+# best_simulated_annealing = simulated_annealing(VT, max_size, t, alpha, max_iteration)
 
 # # Results
 # total_value_simple = getValueState(VT, best_simulated_annealing)

@@ -4,6 +4,7 @@
 from random import shuffle
 import math
 import random
+import timeit
 
 def getValueState(VT, states) :
     total_value = 0
@@ -44,7 +45,7 @@ def probabilityState(worst_case, state, t) :
     r = random.uniform(0, 1)
     return r < p
 
-def simulated_annealing(VT, max_size, t, alpha, states_list, max_iteration) :
+def simulated_annealing(VT, max_size, t, alpha, states_list, max_iteration, timer = 0) :
     best_value = 0
     best_state = []
     iterate_value = 0
@@ -66,25 +67,28 @@ def simulated_annealing(VT, max_size, t, alpha, states_list, max_iteration) :
                     if(probabilityState(getValueState(VT, state), getValueState(VT, iterate_state), t)) :
                         iterate_value = getValueState(VT, state)
                         iterate_state = state
+            if timer != 0 and (timeit.default_timer() - timer) > 120 :
+                print("Simulated Annealing exceeded time limit (120 seconds)\n")
+                break
 
         t = alpha * t
     return best_state
 
-# Max size
-max_size = 19 
-# Object array
-VT = [(1, 3), (4, 6), (5, 7)]
-t = 100
-alpha = 0.5
-max_iteration = 40
+# # Max size
+# max_size = 19 
+# # Object array
+# VT = [(1, 3), (4, 6), (5, 7)]
+# t = 100
+# alpha = 0.5
+# max_iteration = 40
 
-# Simulated Annealing
-states_list = []
-best_simulated_annealing = simulated_annealing(VT, max_size, t, alpha, states_list, max_iteration)
+# # Simulated Annealing
+# states_list = []
+# best_simulated_annealing = simulated_annealing(VT, max_size, t, alpha, states_list, max_iteration)
 
-# Results
-total_value_simple = getValueState(VT, best_simulated_annealing)
-total_size_simple = getSizeState(VT, best_simulated_annealing)
+# # Results
+# total_value_simple = getValueState(VT, best_simulated_annealing)
+# total_size_simple = getSizeState(VT, best_simulated_annealing)
 
-print("Simulated Annealing")
-print ("[Total Value => ", total_value_simple, ", Total Size => ", total_size_simple, ", Best State => ", best_simulated_annealing)
+# print("Simulated Annealing")
+# print ("[Total Value => ", total_value_simple, ", Total Size => ", total_size_simple, ", Best State => ", best_simulated_annealing)

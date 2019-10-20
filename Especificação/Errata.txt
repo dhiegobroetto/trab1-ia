@@ -6,3 +6,10 @@
 To: 500, 100, 50
 alfa: 0.95, 0.85, 0.7
 numIter: 350, 500
+
+
+Os bloxplots a serem apresentados no treino e no teste devem ser com dados normalizados, 
+senão fica sem sentido por conta da diferenca de magnitude nos resultados dos diferentes 
+problemas, que achata os boxplot e dificulta a visualizacao das diferencas.
+
+ 

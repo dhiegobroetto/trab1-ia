@@ -1,0 +1,44 @@
+Begin HP => 10
+(0): Value => 13  Total time => 0.000452
+(1): Value => 42  Total time => 0.006281
+(2): Value => 46  Total time => 0.002445
+(3): Value => 59  Total time => 0.012403
+(4): Value => 118  Total time => 0.140850
+(5): Value => 115  Total time => 0.139499
+(6): Value => 116  Total time => 0.000292
+(7): Value => 135  Total time => 0.003266
+(8): Value => 10886756  Total time => 40.795391
+(9): Value => 23645205  Total time => 120.000078
+Begin HP => 25
+(0): Value => 13  Total time => 0.000449
+(1): Value => 43  Total time => 120.000027
+(2): Value => 46  Total time => 3.848069
+(3): Value => 80  Total time => 73.526101
+(4): Value => 118  Total time => 120.000034
+(5): Value => 115  Total time => 120.000035
+(6): Value => 116  Total time => 0.000286
+(7): Value => 135  Total time => 6.376760
+(8): Value => 10886765  Total time => 76.258668
+(9): Value => 18765975  Total time => 120.000107
+Begin HP => 50
+(0): Value => 13  Total time => 0.000510
+(1): Value => 43  Total time => 120.000023
+(2): Value => 46  Total time => 120.000030
+(3): Value => 80  Total time => 120.000047
+(4): Value => 118  Total time => 120.000025
+(5): Value => 115  Total time => 120.000038
+(6): Value => 116  Total time => 0.000297
+(7): Value => 135  Total time => 120.000055
+(8): Value => 10886765  Total time => 120.000032
+(9): Value => 14033445  Total time => 120.000136
+Begin HP => 100
+(0): Value => 13  Total time => 0.000449
+(1): Value => 43  Total time => 120.000027
+(2): Value => 46  Total time => 120.000024
+(3): Value => 80  Total time => 120.000038
+(4): Value => 118  Total time => 120.000022
+(5): Value => 115  Total time => 120.000040
+(6): Value => 116  Total time => 0.000336
+(7): Value => 135  Total time => 120.000053
+(8): Value => 10886765  Total time => 120.000044
+(9): Value => 9512565  Total time => 120.000204

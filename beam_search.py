@@ -82,8 +82,6 @@ def addToList(VT, state, states_list) :
     state_aux = [state_copy, getValueState(VT, state), getSizeState(VT, state)]
     if state_aux not in states_list :
         states_list.append(state_aux)
-    # else :
-    #     print("existe")
 
 def sortList(states_list) :
     states_list.sort(key = lambda pos: pos[1], reverse = False)

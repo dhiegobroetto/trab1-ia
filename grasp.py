@@ -86,7 +86,7 @@ def defineNeighborhood(VT, state, states_list) :
 
 # ------ Hill Climbing ------ #
 
-def hill_climbing_roulette(VT, max_size, states_list, best_element) :
+def hill_climbing_roulette(VT, max_size, states_list, best_element, timer) :
     best_value = 0
     best_state = [0] * len(VT)
     while(True) :
@@ -99,9 +99,14 @@ def hill_climbing_roulette(VT, max_size, states_list, best_element) :
             if state_value > best_value :
                 best_value = state_value
                 best_state = state
+                states_list.clear()
                 find_best = True
                 break
+            if timer != 0 and (timeit.default_timer() - timer) > 120 :
+                break
         if not find_best :
+            break
+        if timer != 0 and (timeit.default_timer() - timer) > 120 :
             break
     return best_state
 
@@ -127,15 +132,18 @@ def deepest_descent(VT, T, best_state_trivial, states_list) :
 
 # ------ GRASP ------ #
 
-def greedy_random_construct(VT, max_size, states_list, best_element) :
-    return hill_climbing_roulette(VT, max_size, states_list, best_element)
+def greedy_random_construct(VT, max_size, states_list, best_element, timer) :
+    return hill_climbing_roulette(VT, max_size, states_list, best_element, timer)
 
 def grasp(VT, max_size, best_element, max_iteration, timer = 0) :
     best_value = 0
     best_state = [0] * len(VT)
     states_list = []
-    for _ in range(max_iteration) :
-        state = greedy_random_construct(VT, max_size, states_list, best_element)
+    for i in range(max_iteration) :
+        state = greedy_random_construct(VT, max_size, states_list, best_element, timer)
+        if timer != 0 and (timeit.default_timer() - timer) > 120 :
+            print("GRASP exceeded time limit (120 seconds)\n")
+            break
         state_local = deepest_descent(VT, max_size, state, states_list)
         state_local_value = getValueState(VT, state_local)
         if getSizeState(VT, state_local) <= max_size :
@@ -152,17 +160,19 @@ def grasp(VT, max_size, best_element, max_iteration, timer = 0) :
 # # Max size
 # max_size = 19
 # # Max iteration
-# max_iteration = 5
+# max_iteration = 50
 # best_element = 2
 # # Object array
 # VT = [(1, 3), (4, 6), (5, 7)]
+# VT = [(1,3),(4,6),(5,7),(3,4), (2,6), (2,3), (6,8), (1,2),(3,5),(7,10),(10,15),(13,20),(24,25),(29,37)]
+# max_size = 13890000
 # states_list = []
-
-# best_state_grasp = grasp(VT, max_size, best_element, max_iteration)
-
+#
+# best_state_grasp = grasp(VT, max_size, best_element, max_iteration, timeit.default_timer())
+#
 # # Results
 # total_value_grasp = getValueState(VT, best_state_grasp)
 # total_size_grasp = getSizeState(VT, best_state_grasp)
-
+#
 # print("GRASP")
 # print ("[Total Value => ", total_value_grasp, ", Total Size => ", total_size_grasp, ", Best State => ", best_state_grasp)

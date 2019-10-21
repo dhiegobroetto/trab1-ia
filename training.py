@@ -5,6 +5,10 @@ from simulated_annealing import simulated_annealing as sa
 from grasp import grasp
 from genetic import genetic as ga
 
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
 params = [
     {
         't' : 19,
@@ -235,6 +239,10 @@ results.append(results_sa)
 results.append(results_grasp)
 results.append(results_ga)
 
+data = []
+data = [a[0] for beam in results_beam for val in beam for a in val]
+print(data)
+
 hyperparams = []
 
 for i in range(len(results)) : # roda 4 vezes (algoritmos)
@@ -246,5 +254,7 @@ for i in range(len(results)) : # roda 4 vezes (algoritmos)
         results[i][j].append(avg_training)
     results[i].sort(key = lambda pos: pos[2], reverse = True)
     hyperparams.append(results[i][0][1][0])
-print("Valores dos hiperparâmetros selecionados para o teste:\nBeam Search: ", hyperparams[0], "\nSimulated Annealing: ", hyperparams[1], "\nGRASP: ", hyperparams[2], "\nGenetic Algorithm: ", hyperparams[3])
-
+# print("Valores dos hiperparâmetros selecionados para o teste:\nBeam Search: ", hyperparams[0], "\nSimulated Annealing: ", hyperparams[1], "\nGRASP: ", hyperparams[2], "\nGenetic Algorithm: ", hyperparams[3])
+# print(results_ga)
+sns.boxplot(data=data) # Also accepts numpy arrays
+plt.show()

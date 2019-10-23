@@ -1,5 +1,5 @@
 import timeit
-
+import sys
 from beam_search import beam_search as bs
 from simulated_annealing import simulated_annealing as sa
 from grasp import grasp
@@ -194,9 +194,19 @@ def normalize(results) :
     for i in range(len(results)) :
         results[i][0].sort(reverse = True)
         best_value = results[i][0][0][0]
-        for j in range(len(results[i][0])) :
+        for j in range(len(results[i][:10])) :
             results[i][0][j][0] /= best_value
     return results
+
+def get_normalized_values(results) :
+    data = pd.DataFrame()
+    info = []
+    for r1 in results :
+        for r2 in r1 :
+            if(len(r2) > 1) :
+                for r3 in r2 :
+                    data[str(r3[1])] = r3[0]
+    return data
 
 #Your statements here
 
@@ -239,9 +249,16 @@ results.append(results_sa)
 results.append(results_grasp)
 results.append(results_ga)
 
-data = []
-data = [a[0] for beam in results_beam for val in beam for a in val]
-print(data)
+dataBeam = []
+info = []
+# data = [a[0] for beam in results_beam for val in beam for a in val]
+
+dataBeam = get_normalized_values(results_beam)
+# data.append(get_normalized_values(results_sa))
+# data.append(get_normalized_values(results_grasp))
+# data.append(get_normalized_values(results_ga))
+# print(dataBeam)
+
 
 hyperparams = []
 
@@ -255,6 +272,6 @@ for i in range(len(results)) : # roda 4 vezes (algoritmos)
     results[i].sort(key = lambda pos: pos[2], reverse = True)
     hyperparams.append(results[i][0][1][0])
 # print("Valores dos hiperparâmetros selecionados para o teste:\nBeam Search: ", hyperparams[0], "\nSimulated Annealing: ", hyperparams[1], "\nGRASP: ", hyperparams[2], "\nGenetic Algorithm: ", hyperparams[3])
-# print(results_ga)
-sns.boxplot(data=data) # Also accepts numpy arrays
-plt.show()
+print(hyperparams)
+# sns.boxplot(data=dataBeam) # Also accepts numpy arrays
+# plt.show()

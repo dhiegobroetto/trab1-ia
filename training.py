@@ -215,17 +215,15 @@ def normalize(results) :
 
 def get_normalized_values(results) :
     data = pd.DataFrame()
-    info = []
-    resultado = []
     for r1 in results :
-        # print(r1)
-        for r2 in r1[0] :
-            if(len(r2) > 1) :
-                info.append(r2[0])
-        info.sort(reverse=True)
-        resultado.append(info.copy())
-        info.clear()
-    return resultado[:10]
+        data[str(r1[1][0])] = r1[0]
+        # for r2 in r1[0] :
+        #     if(len(r2) > 1) :
+                
+        # data.sort(reverse=True)
+        # resultado.append(data.copy())
+        # data.clear()
+    return data
 
 #Your statements here
 
@@ -252,32 +250,32 @@ ga_mutation = [0.10, 0.20, 0.30]
 
 # results_ga = genetic_algorithm_train(ga_population, ga_crossover, ga_mutation)
 
-# results_beam = readTrainResults("results/beam.txt")
-results_sa = readTrainResults("results/SA.txt")
+results_beam = readTrainResults("results/beam.txt")
+# results_sa = readTrainResults("results/SA.txt")
 # results_grasp = readTrainResults("results/GRASP.txt")
 # results_ga = readTrainResults("results/GA.txt")
 
-# results_beam = normalize(results_beam)
-results_sa = normalize(results_sa)
+results_beam = normalize(results_beam)
+# results_sa = normalize(results_sa)
 # results_grasp = normalize(results_grasp)
 # results_ga = normalize(results_ga)
 # print(results_beam)
 results = []
 # results.append(results_beam)
-results.append(results_sa)
+results.append(results_beam)
 # results.append(results_grasp)
 # results.append(results_ga)
 
-dataBeam = []
-dataSa = []
+dataBeam = pd.DataFrame()
+dataSa = pd.DataFrame()
 info = []
 # data = [a[0] for beam in results_beam for val in beam for a in val]
 
-# dataBeam = get_normalized_values(results_beam)
-dataSa = get_normalized_values(results_sa)
+dataBeam = get_normalized_values(results_beam)
+# dataSa = get_normalized_values(results_sa)
 # data.append(get_normalized_values(results_grasp))
 # data.append(get_normalized_values(results_ga))
-print(dataSa)
+print(dataBeam)
 
 
 # hyperparams = []
@@ -293,5 +291,5 @@ print(dataSa)
 #     hyperparams.append(results[i][0][1][0])
 # print("Valores dos hiperparâmetros selecionados para o teste:\nBeam Search: ", hyperparams[0], "\nSimulated Annealing: ", hyperparams[1], "\nGRASP: ", hyperparams[2], "\nGenetic Algorithm: ", hyperparams[3])
 # print(hyperparams)
-sns.boxplot(data=dataSa) # Also accepts numpy arrays
-plt.show()
+# sns.boxplot(data=dataBeam) # Also accepts numpy arrays
+# plt.show()

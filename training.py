@@ -191,22 +191,40 @@ def readTrainResults(filename) :
     return results
 
 def normalize(results) :
-    for i in range(len(results)) :
-        results[i][0].sort(reverse = True)
-        best_value = results[i][0][0][0]
-        for j in range(len(results[i][:10])) :
-            results[i][0][j][0] /= best_value
+    best_value = 0
+    val = []
+    for i in range(10) :
+        for j in range(len(results)) :
+            val.append(results[j][0][i][0])
+        print(val)
+        best_value = max(val)
+        val.clear()
+        # results[i][0].sort(reverse = True)
+        # best_value = results[i][0][0][0]
+        # for j in range(len(results[i][0][:10])) :
+        #     results[i][0][j][0] /= best_value
+    
+        for j in range(len(results)) :
+            # results[i][0].sort(reverse = True)
+            # best_value = results[i][0][0][0]
+            # for j in range(len(results[i][0][:10])) :
+                results[j][0][i][0] /= best_value
+    # for i in range(len(results)) :
+        # results[i][0].sort(reverse = True)
     return results
 
 def get_normalized_values(results) :
     data = pd.DataFrame()
     info = []
+    resultado = []
     for r1 in results :
-        for r2 in r1 :
+        # print(r1)
+        for r2 in r1[0] :
             if(len(r2) > 1) :
-                for r3 in r2 :
-                    data[str(r3[1])] = r3[0]
-    return data
+                info.append(r2[0])
+        resultado.append(info.copy())
+        info.clear()
+    return resultado
 
 #Your statements here
 
@@ -234,20 +252,20 @@ ga_mutation = [0.10, 0.20, 0.30]
 # results_ga = genetic_algorithm_train(ga_population, ga_crossover, ga_mutation)
 
 results_beam = readTrainResults("results/beam.txt")
-results_sa = readTrainResults("results/SA.txt")
-results_grasp = readTrainResults("results/GRASP.txt")
-results_ga = readTrainResults("results/GA.txt")
+# results_sa = readTrainResults("results/SA.txt")
+# results_grasp = readTrainResults("results/GRASP.txt")
+# results_ga = readTrainResults("results/GA.txt")
 
 results_beam = normalize(results_beam)
-results_sa = normalize(results_sa)
-results_grasp = normalize(results_grasp)
-results_ga = normalize(results_ga)
-
+# results_sa = normalize(results_sa)
+# results_grasp = normalize(results_grasp)
+# results_ga = normalize(results_ga)
+print(results_beam)
 results = []
 results.append(results_beam)
-results.append(results_sa)
-results.append(results_grasp)
-results.append(results_ga)
+# results.append(results_sa)
+# results.append(results_grasp)
+# results.append(results_ga)
 
 dataBeam = []
 info = []
@@ -257,21 +275,21 @@ dataBeam = get_normalized_values(results_beam)
 # data.append(get_normalized_values(results_sa))
 # data.append(get_normalized_values(results_grasp))
 # data.append(get_normalized_values(results_ga))
-# print(dataBeam)
+print(dataBeam)
 
 
-hyperparams = []
+# hyperparams = []
 
-for i in range(len(results)) : # roda 4 vezes (algoritmos)
-    for j in range(len(results[i])) : # roda 4 vezes bs (combinação dos HP)
-        avg_training = 0
-        for training_result in results[i][j][0] : # + Combinações dos parâmetros / tamanho do vetor
-            avg_training += training_result[0]
-        avg_training /= len(results[i][j])
-        results[i][j].append(avg_training)
-    results[i].sort(key = lambda pos: pos[2], reverse = True)
-    hyperparams.append(results[i][0][1][0])
+# for i in range(len(results)) : # roda 4 vezes (algoritmos)
+#     for j in range(len(results[i])) : # roda 4 vezes bs (combinação dos HP)
+#         avg_training = 0
+#         for training_result in results[i][j][0] : # + Combinações dos parâmetros / tamanho do vetor
+#             avg_training += training_result[0]
+#         avg_training /= len(results[i][j])
+#         results[i][j].append(avg_training)
+#     results[i].sort(key = lambda pos: pos[2], reverse = True)
+#     hyperparams.append(results[i][0][1][0])
 # print("Valores dos hiperparâmetros selecionados para o teste:\nBeam Search: ", hyperparams[0], "\nSimulated Annealing: ", hyperparams[1], "\nGRASP: ", hyperparams[2], "\nGenetic Algorithm: ", hyperparams[3])
-print(hyperparams)
-# sns.boxplot(data=dataBeam) # Also accepts numpy arrays
-# plt.show()
+# print(hyperparams)
+sns.boxplot(data=dataBeam) # Also accepts numpy arrays
+plt.show()

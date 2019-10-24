@@ -80,6 +80,7 @@ def simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params) :
     print("---- Simulated Annealing ----")
     f = open("results/SA.txt", "w+")
     i = 0
+    results_sa = []
     for to in sa_to :
         for alpha in sa_alpha :
             for max_iteration in sa_max_iteration :
@@ -104,6 +105,7 @@ def simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params) :
             i = 0
         print("Finish HP => ", [to, alpha, max_iteration], " Result list => ", results_sa)
     f.close()
+    return results_sa
 
 # # Max size
 # max_size = 19 

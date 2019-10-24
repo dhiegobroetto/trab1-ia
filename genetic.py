@@ -183,6 +183,7 @@ def genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params) :
     print("---- Genetic Algorithm ----")
     f = open("results/GA.txt", "w+")
     i = 0
+    results_ga = []
     for population in ga_population :
         for crossover in ga_crossover :
             for mutation in ga_mutation :
@@ -207,6 +208,7 @@ def genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params) :
             i = 0
         print("Finish HP => ", [population, crossover, mutation], " Result list => ", results_ga)
     f.close()
+    return results_ga
 
 # # Max size
 # max_size = 58

@@ -159,6 +159,7 @@ def grasp_train(grasp_best_elements, grasp_max_iteration, params) :
     print("---- GRASP ----")
     f = open("results/GRASP.txt", "w+")
     i = 0
+    results_grasp = []
     for best_element in grasp_best_elements :
         for max_iteration in grasp_max_iteration :
             results_grasp_param = []
@@ -181,6 +182,7 @@ def grasp_train(grasp_best_elements, grasp_max_iteration, params) :
         i = 0
         print("Finish HP => ", [best_element, max_iteration], " Result list => ", results_grasp)
     f.close()
+    return results_grasp
 
 # ------ Program ------ #
 

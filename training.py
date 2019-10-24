@@ -160,16 +160,16 @@ data_time_grasp = pd.DataFrame()
 data_time_ga = pd.DataFrame()
 
 # Execution of meta-heuristics
-# results_beam = beam_search_train(beam_search_hyperparams, params)
-# results_sa = simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params)
-# results_grasp = grasp_train(grasp_best_elements, grasp_max_iteration, params)
-# results_ga = genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params)
+results_beam = beam_search_train(beam_search_hyperparams, params)
+results_sa = simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params)
+results_grasp = grasp_train(grasp_best_elements, grasp_max_iteration, params)
+results_ga = genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params)
 
 # Obtains data from txt file
-results_beam = readTrainResults("results/beam.txt")
-results_sa = readTrainResults("results/SA.txt")
-results_grasp = readTrainResults("results/GRASP.txt")
-results_ga = readTrainResults("results/GA.txt")
+# results_beam = readTrainResults("results/beam.txt")
+# results_sa = readTrainResults("results/SA.txt")
+# results_grasp = readTrainResults("results/GRASP.txt")
+# results_ga = readTrainResults("results/GA.txt")
 
 # Normalization of data
 results_beam = normalize(results_beam)

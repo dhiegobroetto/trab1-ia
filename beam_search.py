@@ -90,6 +90,7 @@ def beam_search_train(beam_search_hyperparams, params) :
     print("---- Beam Search ----")
     f = open("results/beam.txt", "w+")
     i = 0
+    results_beam = []
     for beam_hp in beam_search_hyperparams :
         results_beam_param = []
         f.write("Begin HP => %d\n" % beam_hp)

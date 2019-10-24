@@ -53,123 +53,6 @@ params = [
     }
 ]
 
-def getValueState(VT, states) :
-    total_value = 0
-    for i in range(0, len(states)) :
-        total_value += VT[i][0] * states[i]
-    return total_value
-
-# def beam_search_train(bean_search_hyperparams) :
-#     print("---- Beam Search ----")
-#     f = open("results/beam.txt", "w+")
-#     i = 0
-#     for beam_hp in beam_search_hyperparams :
-#         results_beam_param = []
-#         f.write("Begin HP => %d\n" % beam_hp)
-#         print("Begin HP => ", beam_hp)
-#         for param in params :
-#             start = timeit.default_timer()
-#             state = bs(param['vt'], param['t'], beam_hp, start)
-#             stop = timeit.default_timer()
-#             state_value = getValueState(param['vt'], state)
-#             results_beam_param.append({'value': state_value, 'time': (stop - start)})
-#             f.write("(%d): " % i)
-#             i+=1
-#             f.write("Value => %d " % (state_value))
-#             f.write(" Total time => %f\n" % (stop - start))
-#             print("(",i,") Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
-#         results_beam.append([results_beam_param.copy(), beam_hp])
-#         results_beam_param.clear()
-#         i = 0
-#         print("Finish HP => ", beam_hp, " Result list => ", results_beam)
-#     f.close()
-#     return results_beam
-
-# def simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration) :
-#     print("---- Simulated Annealing ----")
-#     f = open("results/SA.txt", "w+")
-#     i = 0
-#     for to in sa_to :
-#         for alpha in sa_alpha :
-#             for max_iteration in sa_max_iteration :
-#                 results_sa_param = []
-#                 f.write("Begin HP => %d, " % to)
-#                 f.write("%f, " % alpha)
-#                 f.write("%d\n" %  max_iteration)
-#                 print("Begin HP => ", to, ", ", alpha, ", ", max_iteration)
-#                 for param in params :
-#                     start = timeit.default_timer()
-#                     state = sa(param['vt'], param['t'], to, alpha, max_iteration, start)
-#                     stop = timeit.default_timer()
-#                     state_value = getValueState(param['vt'], state)
-#                     results_sa_param.append({'value': state_value, 'time': (stop - start)})
-#                     f.write("(%d): " % i)
-#                     i+=1
-#                     f.write("Value => %d " % (state_value))
-#                     f.write(" Total time => %f\n" % (stop - start))
-#                     print("(",i,") Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
-#             results_sa.append([results_sa_param.copy(), [to, alpha, max_iteration]])
-#             results_sa_param.clear()
-#             i = 0
-#         print("Finish HP => ", [to, alpha, max_iteration], " Result list => ", results_sa)
-#     f.close()
-
-# def grasp_train(grasp_best_elements, grasp_max_iteration) :
-#     print("---- GRASP ----")
-#     f = open("results/GRASP.txt", "w+")
-#     i = 0
-#     for best_element in grasp_best_elements :
-#         for max_iteration in grasp_max_iteration :
-#             results_grasp_param = []
-#             f.write("Begin HP => %d, " % best_element)
-#             f.write("%d\n" % max_iteration)
-#             print("Begin HP => ", best_element, ", ", max_iteration)
-#             for param in params :
-#                 start = timeit.default_timer()
-#                 state = grasp(param['vt'], param['t'], best_element, max_iteration, start)
-#                 stop = timeit.default_timer()
-#                 state_value = getValueState(param['vt'], state)
-#                 results_grasp_param.append({'value': state_value, 'time': (stop - start)})
-#                 f.write("(%d): " % i)
-#                 i+=1
-#                 f.write("Value => %d " % (state_value))
-#                 f.write(" Total time => %f\n" % (stop - start))
-#                 print("(",i,") Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
-#         results_grasp.append([results_grasp_param.copy(), [best_element, max_iteration]])
-#         results_grasp_param.clear()
-#         i = 0
-#         print("Finish HP => ", [best_element, max_iteration], " Result list => ", results_grasp)
-#     f.close()
-
-# def genetic_algorithm_train(ga_population, ga_crossover, ga_mutation) :
-#     print("---- Genetic Algorithm ----")
-#     f = open("results/GA.txt", "w+")
-#     i = 0
-#     for population in ga_population :
-#         for crossover in ga_crossover :
-#             for mutation in ga_mutation :
-#                 results_ga_param = []
-#                 f.write("Begin HP => %d, " % population)
-#                 f.write("%f, " % crossover)
-#                 f.write("%f\n" % mutation)
-#                 print("Begin HP => ", population, ", ", crossover, ", ", mutation)
-#                 for param in params :
-#                     start = timeit.default_timer()
-#                     state = ga(param['vt'], param['t'], population, 2, 100, crossover, mutation, start)
-#                     stop = timeit.default_timer()
-#                     state_value = getValueState(param['vt'], state)
-#                     results_ga_param.append({'value': state_value, 'time': (stop - start)})
-#                     f.write("(%d): " % i)
-#                     i+=1
-#                     f.write("Value => %d " % (state_value))
-#                     f.write(" Total time => %f\n" % (stop - start))
-#                     print("(",i,") Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
-#             results_ga.append([results_ga_param.copy(), [population, crossover, mutation]])
-#             results_ga_param.clear()
-#             i = 0
-#         print("Finish HP => ", [population, crossover, mutation], " Result list => ", results_ga)
-#     f.close()
-
 def readTrainResults(filename) :
     f = open(filename, 'r')
     hp = 0
@@ -203,7 +86,12 @@ def normalize(results) :
         for j in range(len(results)) :
             results[j][0][i][0] /= best_value
             results[j][0][i][1] /= best_time
-    print(results)
+    for i in range(len(results)) :
+        total = 0
+        for j in range(len(results[i][0])) :
+            total += results[i][0][j][0]
+        results[i].append([total / len(results[i][0])])
+    results.sort(key = lambda pos: pos[2], reverse = True)
     return results
 
 # ----- Values methods ----- #
@@ -316,29 +204,29 @@ sns.boxplot(data = data_value_ga)
 plt.title("Boxplot dos valores obtidos no treino da meta-heurística Algoritmo Genético")
 plt.show()
 
-# ------ Times ------ #
+# # ------ Times ------ #
 
-# Getting times of results
-results_time_beam = get_times(results_beam)
-results_time_sa = get_times(results_sa)
-results_time_grasp = get_times(results_grasp)
-results_time_ga = get_times(results_ga)
+# # Getting times of results
+# results_time_beam = get_times(results_beam)
+# results_time_sa = get_times(results_sa)
+# results_time_grasp = get_times(results_grasp)
+# results_time_ga = get_times(results_ga)
 
-# Getting times to DataFrame format
-data_time_beam = get_formatted_times(results_time_beam)
-data_time_sa = get_formatted_times(results_time_sa)
-data_time_grasp = get_formatted_times(results_time_grasp)
-data_time_ga = get_formatted_times(results_time_ga)
+# # Getting times to DataFrame format
+# data_time_beam = get_formatted_times(results_time_beam)
+# data_time_sa = get_formatted_times(results_time_sa)
+# data_time_grasp = get_formatted_times(results_time_grasp)
+# data_time_ga = get_formatted_times(results_time_ga)
 
-sns.boxplot(data = data_time_beam)
-plt.title("Boxplot dos tempos obtidos no treino da meta-heurística Beam Search")
-plt.show()
-sns.boxplot(data = data_time_sa)
-plt.title("Boxplot dos tempos obtidos no treino da meta-heurística Simulated Annealing")
-plt.show()
-sns.boxplot(data = data_time_grasp)
-plt.title("Boxplot dos tempos obtidos no treino da meta-heurística GRASP")
-plt.show()
-sns.boxplot(data = data_time_ga)
-plt.title("Boxplot dos tempos obtidos no treino da meta-heurística Algoritmo Genético")
-plt.show()
+# sns.boxplot(data = data_time_beam)
+# plt.title("Boxplot dos tempos obtidos no treino da meta-heurística Beam Search")
+# plt.show()
+# sns.boxplot(data = data_time_sa)
+# plt.title("Boxplot dos tempos obtidos no treino da meta-heurística Simulated Annealing")
+# plt.show()
+# sns.boxplot(data = data_time_grasp)
+# plt.title("Boxplot dos tempos obtidos no treino da meta-heurística GRASP")
+# plt.show()
+# sns.boxplot(data = data_time_ga)
+# plt.title("Boxplot dos tempos obtidos no treino da meta-heurística Algoritmo Genético")
+# plt.show()

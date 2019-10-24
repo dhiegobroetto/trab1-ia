@@ -76,6 +76,35 @@ def simulated_annealing(VT, max_size, t, alpha, max_iteration, timer = 0) :
             break
     return best_state
 
+def simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params) :
+    print("---- Simulated Annealing ----")
+    f = open("results/SA.txt", "w+")
+    i = 0
+    for to in sa_to :
+        for alpha in sa_alpha :
+            for max_iteration in sa_max_iteration :
+                results_sa_param = []
+                f.write("Begin HP => %d, " % to)
+                f.write("%f, " % alpha)
+                f.write("%d\n" %  max_iteration)
+                print("Begin HP => ", to, ", ", alpha, ", ", max_iteration)
+                for param in params :
+                    start = timeit.default_timer()
+                    state = simulated_annealing(param['vt'], param['t'], to, alpha, max_iteration, start)
+                    stop = timeit.default_timer()
+                    state_value = getValueState(param['vt'], state)
+                    results_sa_param.append({'value': state_value, 'time': (stop - start)})
+                    f.write("(%d): " % i)
+                    i+=1
+                    f.write("Value => %d " % (state_value))
+                    f.write(" Total time => %f\n" % (stop - start))
+                    print("(",i,") Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
+            results_sa.append([results_sa_param.copy(), [to, alpha, max_iteration]])
+            results_sa_param.clear()
+            i = 0
+        print("Finish HP => ", [to, alpha, max_iteration], " Result list => ", results_sa)
+    f.close()
+
 # # Max size
 # max_size = 19 
 # # Object array

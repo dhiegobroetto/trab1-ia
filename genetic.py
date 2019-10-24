@@ -179,6 +179,35 @@ def generateRandomState(VT, max_size) :
 def sortList(population) :
     population.sort(key = lambda pos: pos[1], reverse = False)
 
+def genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params) :
+    print("---- Genetic Algorithm ----")
+    f = open("results/GA.txt", "w+")
+    i = 0
+    for population in ga_population :
+        for crossover in ga_crossover :
+            for mutation in ga_mutation :
+                results_ga_param = []
+                f.write("Begin HP => %d, " % population)
+                f.write("%f, " % crossover)
+                f.write("%f\n" % mutation)
+                print("Begin HP => ", population, ", ", crossover, ", ", mutation)
+                for param in params :
+                    start = timeit.default_timer()
+                    state = genetic(param['vt'], param['t'], population, 2, 100, crossover, mutation, start)
+                    stop = timeit.default_timer()
+                    state_value = getValueState(param['vt'], state)
+                    results_ga_param.append({'value': state_value, 'time': (stop - start)})
+                    f.write("(%d): " % i)
+                    i+=1
+                    f.write("Value => %d " % (state_value))
+                    f.write(" Total time => %f\n" % (stop - start))
+                    print("(",i,") Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
+            results_ga.append([results_ga_param.copy(), [population, crossover, mutation]])
+            results_ga_param.clear()
+            i = 0
+        print("Finish HP => ", [population, crossover, mutation], " Result list => ", results_ga)
+    f.close()
+
 # # Max size
 # max_size = 58
 # # Object array

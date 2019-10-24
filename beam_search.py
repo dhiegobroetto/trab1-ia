@@ -86,6 +86,32 @@ def addToList(VT, state, states_list) :
 def sortList(states_list) :
     states_list.sort(key = lambda pos: pos[1], reverse = False)
 
+def beam_search_train(beam_search_hyperparams, params) :
+    print("---- Beam Search ----")
+    f = open("results/beam.txt", "w+")
+    i = 0
+    for beam_hp in beam_search_hyperparams :
+        results_beam_param = []
+        f.write("Begin HP => %d\n" % beam_hp)
+        print("Begin HP => ", beam_hp)
+        for param in params :
+            start = timeit.default_timer()
+            state = beam_search(param['vt'], param['t'], beam_hp, start)
+            stop = timeit.default_timer()
+            state_value = getValueState(param['vt'], state)
+            results_beam_param.append({'value': state_value, 'time': (stop - start)})
+            f.write("(%d): " % i)
+            i+=1
+            f.write("Value => %d " % (state_value))
+            f.write(" Total time => %f\n" % (stop - start))
+            print("(",i,") Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
+        results_beam.append([results_beam_param.copy(), beam_hp])
+        results_beam_param.clear()
+        i = 0
+        print("Finish HP => ", beam_hp, " Result list => ", results_beam)
+    f.close()
+    return results_beam
+
 # # Max size
 # T = 19 
 # # Objects array

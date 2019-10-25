@@ -1,6 +1,7 @@
 import timeit
 import sys
 import csv
+import numpy as np
 from beam_search import beam_search_train
 from simulated_annealing import simulated_annealing_train
 from grasp import grasp_train
@@ -44,25 +45,23 @@ params = [
         't' : 138,
         'vt' : [(1,3),(4,6),(5,7),(3,4), (2,6), (2,3), (6,8), (1,2), (2,3), (3,5), (7,10), (10,15), (13,20), (24,25), (29,30), (50,50)]
     }
-    # ,
-    # {
-    #     't' : 13890000,
-    #     'vt' : [(1,3),(4,6),(5,7),(3,4), (2,6), (2,3), (6,8), (1,2),(3,5),(7,10),(10,15),(13,20),(24,25),(29,37)]
-    # },
-    # {
-    #     't' : 45678901,
-    #     'vt' : [(1,3),(4,6),(5,7),(3,4),(2,6),(1,2),(3,5),(7,10),(10,15),(13,20),(15,20)]
-    # }
+    ,
+    {
+        't' : 13890000,
+        'vt' : [(1,3),(4,6),(5,7),(3,4), (2,6), (2,3), (6,8), (1,2),(3,5),(7,10),(10,15),(13,20),(24,25),(29,37)]
+    },
+    {
+        't' : 45678901,
+        'vt' : [(1,3),(4,6),(5,7),(3,4),(2,6),(1,2),(3,5),(7,10),(10,15),(13,20),(15,20)]
+    }
 ]
 
-def readTrainResults(filename) :
-    read = pd.read_csv(filename)
-    # results = []
-    # for r in read :
-    #     if 'hp' in r :
-
-    return read
-    return results
+def readTrainResults(filename, params_size) :
+    results = pd.read_csv(filename)
+    val = []
+    for i in range(0, len(results)) :
+        val.append(results.iloc[params_size * i : params_size * (i+1)])
+    return val
     # f = open(filename, 'r')
     # hp = 0
     # val = 0
@@ -82,24 +81,50 @@ def readTrainResults(filename) :
     # return results
 
 def normalize(results) :
+    # best_value = 0
+    # for i in range(10) :
+    #     val = []
+    #     time = []
+    #     for j in range(len(results)) :
+    #         val.append(results[j][0][i][0])
+    #         time.append(results[j][0][i][1])
+    #     best_value = max(val)
+    #     best_time = max(time)
+    #     for j in range(len(results)) :
+    #         results[j][0][i][0] /= best_value
+    #         results[j][0][i][1] /= best_time
+
+
     best_value = 0
+    val = []
+    time = []
+    for j in range(len(results)) :
+        val.append(list(results[j]['value'].values))
+        time.append(list(results[j]['time'].values))
     for i in range(10) :
-        val = []
-        time = []
-        for j in range(len(results)) :
-            val.append(results[j][0][i][0])
-            time.append(results[j][0][i][1])
-        best_value = max(val)
-        best_time = max(time)
-        for j in range(len(results)) :
-            results[j][0][i][0] /= best_value
-            results[j][0][i][1] /= best_time
-    for i in range(len(results)) :
-        total = 0
-        for j in range(len(results[i][0])) :
-            total += results[i][0][j][0]
-        results[i].append([total / len(results[i][0])])
-    results.sort(key = lambda pos: pos[2], reverse = True)
+        val2 = []
+        time2 = []
+        for j in range(len(val)) :
+            if(len(val[j]) > 0 and len(time[j]) > 0) :
+                val2.append(val[j][i])
+                time2.append(time[j][i])
+        best_value = max(val2)
+        best_time = max(time2)
+        # if(len(time) > 0) :
+        for j in range(len(val)) :
+            val[j] /= best_value
+            time[j] /= best_time
+        # sorted(results[j])
+    print(results)
+    #     for j in range(len(results)) :
+    #         results[j][0][i][0] /= best_value
+    #         results[j][0][i][1] /= best_time
+    # for i in range(len(results)) :
+    #     total = 0
+    #     for j in range(len(results[i][0])) :
+    #         total += results[i][0][j][0]
+    #     results[i].append([total / len(results[i][0])])
+    # results.sort(key = lambda pos: pos[2], reverse = True)
     return results
 
 # ----- Values methods ----- #
@@ -175,21 +200,16 @@ data_time_ga = pd.DataFrame()
 # results_ga = genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params)
 
 # Obtains data from txt file
-results_beam = readTrainResults("results/beam.csv")
-# df = pd.read_csv('results/beam.csv')
-results_sa = readTrainResults("results/SA.csv")
-results_grasp = readTrainResults("results/GRASP.csv")
-results_ga = readTrainResults("results/GA.csv")
+results_beam = readTrainResults("results/beam.csv", len(params))
+# results_sa = readTrainResults("results/SA.csv", len(params))
+# results_grasp = readTrainResults("results/GRASP.csv", len(params))
+# results_ga = readTrainResults("results/GA.csv", len(params))
 
-# print(results_beam)
-# print("\n")
-# print(results_beam2)
-
-# Normalization of data
+# # Normalization of data
 results_beam = normalize(results_beam)
-results_sa = normalize(results_sa)
-results_grasp = normalize(results_grasp)
-results_ga = normalize(results_ga)
+# results_sa = normalize(results_sa)
+# results_grasp = normalize(results_grasp)
+# results_ga = normalize(results_ga)
 
 # ------ Values ------ #
 
@@ -205,7 +225,7 @@ results_ga = normalize(results_ga)
 # data_value_grasp = get_formatted_values(results_value_grasp)
 # data_value_ga = get_formatted_values(results_value_ga)
 
-# sns.boxplot(data = data_value_beam)
+# sns.boxplot(data = results_beam)
 # plt.title("Boxplot dos valores obtidos no treino da meta-heurística Beam Search")
 # plt.show()
 # sns.boxplot(data = data_value_sa)

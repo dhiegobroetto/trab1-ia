@@ -2,6 +2,7 @@
 # ---------- 2016204404 ----------- #
 import timeit
 import csv
+from collections import defaultdict
 
 def getValueState(VT, states) :
     total_value = 0
@@ -89,35 +90,25 @@ def sortList(states_list) :
 
 def beam_search_train(beam_search_hyperparams, params) :
     print("---- Beam Search ----")
-    # f = open("results/beam.txt", "w+")
 
     with open('results/beam.csv', mode='w') as csv_file:
         fieldnames = ['hp', 'value', 'time']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        # i = 0
-        results_beam = []
+        results_beam = defaultdict(float)
+        writer.writeheader()
         for beam_hp in beam_search_hyperparams :
-            results_beam_param = []
-            # f.write("Begin HP => %d\n" % beam_hp)
-            writer.writeheader()
             print("Begin HP => ", beam_hp)
             for param in params :
                 start = timeit.default_timer()
                 state = beam_search(param['vt'], param['t'], beam_hp, start)
                 stop = timeit.default_timer()
                 state_value = getValueState(param['vt'], state)
-                results_beam_param.append({'value': state_value, 'time': (stop - start)})
-                # f.write("(%d): " % i)
-                # i+=1
+                if float(beam_hp) not in results_beam :
+                    results_beam[float(beam_hp)] = []
+                results_beam[float(beam_hp)].append([{'value': state_value, 'time': (stop - start)}])
                 writer.writerow({'hp': beam_hp, 'value': state_value, 'time': (stop - start)})
-                # f.write("Value => %d " % (state_value))
-                # f.write(" Total time => %f\n" % (stop - start))
-                # print("(",i,") Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
-            results_beam.append([results_beam_param.copy(), [beam_hp]])
-            results_beam_param.clear()
-            i = 0
+                print("Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
             print("Finish HP => ", beam_hp, " Result list => ", results_beam)
-    # f.close()
     return results_beam
 
 # # Max size

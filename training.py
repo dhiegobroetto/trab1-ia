@@ -6,6 +6,7 @@ from beam_search import beam_search_train
 from simulated_annealing import simulated_annealing_train
 from grasp import grasp_train
 from genetic import genetic_algorithm_train
+from collections import defaultdict
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -20,65 +21,92 @@ params = [
     {
         't' : 58,
         'vt' : [(1,3),(4,6),(5,7),(3,4)]
-    },
-    {
-        't' : 58,
-        'vt' : [(1,3),(4,6),(5,7),(3,4),(8,10),(4,8),(3,5),(6,9)]
-    },
-    {
-        't' : 58,
-        'vt' : [(1,3),(4,6),(5,7),(3,4),(8,10),(4,8),(3,5),(6,9),(2,1)]
-    },
-    {
-        't' : 120,
-        'vt' : [(1,2),(2,3),(4,5),(5,10),(14,15),(15,20),(24,25),(29,30),(50,50)]
-    },
-    {
-        't' : 120,
-        'vt' : [(1,2),(2,3),(3,5),(7,10),(10,15),(13,20),(24,25),(29,30),(50,50)]
-    },
-    {
-        't' : 120,
-        'vt' : [(24,25),(29,30),(50,50)]
-    },
-    {
-        't' : 138,
-        'vt' : [(1,3),(4,6),(5,7),(3,4), (2,6), (2,3), (6,8), (1,2), (2,3), (3,5), (7,10), (10,15), (13,20), (24,25), (29,30), (50,50)]
     }
-    ,
-    {
-        't' : 13890000,
-        'vt' : [(1,3),(4,6),(5,7),(3,4), (2,6), (2,3), (6,8), (1,2),(3,5),(7,10),(10,15),(13,20),(24,25),(29,37)]
-    },
-    {
-        't' : 45678901,
-        'vt' : [(1,3),(4,6),(5,7),(3,4),(2,6),(1,2),(3,5),(7,10),(10,15),(13,20),(15,20)]
-    }
+    # ,
+    # {
+    #     't' : 58,
+    #     'vt' : [(1,3),(4,6),(5,7),(3,4),(8,10),(4,8),(3,5),(6,9)]
+    # },
+    # {
+    #     't' : 58,
+    #     'vt' : [(1,3),(4,6),(5,7),(3,4),(8,10),(4,8),(3,5),(6,9),(2,1)]
+    # },
+    # {
+    #     't' : 120,
+    #     'vt' : [(1,2),(2,3),(4,5),(5,10),(14,15),(15,20),(24,25),(29,30),(50,50)]
+    # },
+    # {
+    #     't' : 120,
+    #     'vt' : [(1,2),(2,3),(3,5),(7,10),(10,15),(13,20),(24,25),(29,30),(50,50)]
+    # },
+    # {
+    #     't' : 120,
+    #     'vt' : [(24,25),(29,30),(50,50)]
+    # },
+    # {
+    #     't' : 138,
+    #     'vt' : [(1,3),(4,6),(5,7),(3,4), (2,6), (2,3), (6,8), (1,2), (2,3), (3,5), (7,10), (10,15), (13,20), (24,25), (29,30), (50,50)]
+    # }
+    # ,
+    # {
+    #     't' : 13890000,
+    #     'vt' : [(1,3),(4,6),(5,7),(3,4), (2,6), (2,3), (6,8), (1,2),(3,5),(7,10),(10,15),(13,20),(24,25),(29,37)]
+    # },
+    # {
+    #     't' : 45678901,
+    #     'vt' : [(1,3),(4,6),(5,7),(3,4),(2,6),(1,2),(3,5),(7,10),(10,15),(13,20),(15,20)]
+    # }
 ]
 
 def readTrainResults(filename, params_size) :
-    results = pd.read_csv(filename)
-    val = []
-    for i in range(0, len(results)) :
-        val.append(results.iloc[params_size * i : params_size * (i+1)])
-    return val
-    # f = open(filename, 'r')
-    # hp = 0
-    # val = 0
-    # time = 0.0
-    # count = -1
-    # for l in f :
-    #     if "Begin HP =>" in l :
-    #         count += 1
-    #         hp = l.replace("Begin HP => ", "").replace('\n', "").split(", ")
-    #         hp = [float(num) for num in hp]
-    #         results.append([[], [hp]])
-    #     if "Value =>" in l :
-    #         val = int(l.split("Value => ")[1].split("  Total time => ")[0])
-    #         time = float(l.split("Total time => ")[1].split('\n')[0])
-    #         results[count][0].append([val, time])
-    # f.close()
-    # return results
+    {'value': 1, 'time': 0.4}
+    with open(filename, newline='') as csvfile:
+        r = csv.DictReader(csvfile)
+        results = defaultdict(float)
+        for l in r :
+            if float(l['hp']) not in results :
+                results[float(l['hp'])] = []
+            results[float(l['hp'])].append([{'value': int(l['value']), 'time': float(l['time'])}])
+            print(results)
+        # results[].append([val.copy(), l['hp']])
+
+        #     if "Begin HP =>" in l :
+        #         count += 1
+        #         hp = l.replace("Begin HP => ", "").replace('\n', "").split(", ")
+        #         hp = [float(num) for num in hp]
+        #         results.append([[], [hp]])
+        #     if "Value =>" in l :
+        #         val = int(l.split("Value => ")[1].split("  Total time => ")[0])
+        #         time = float(l.split("Total time => ")[1].split('\n')[0])
+        #         results[count][0].append([val, time])
+        # f.close()
+
+
+
+
+
+        # results = pd.read_csv(filename)
+        # val = []
+        # for i in range(0, len(results)) :
+        #     val.append(results.iloc[params_size * i : params_size * (i+1)])
+        # return val
+        # f = open(filename, 'r')
+        # hp = 0
+        # val = 0
+        # time = 0.0
+        # count = -1
+        # for l in f :
+        #     if "Begin HP =>" in l :
+        #         count += 1
+        #         hp = l.replace("Begin HP => ", "").replace('\n', "").split(", ")
+        #         hp = [float(num) for num in hp]
+        #         results.append([[], [hp]])
+        #     if "Value =>" in l :
+        #         val = int(l.split("Value => ")[1].split("  Total time => ")[0])
+        #         time = float(l.split("Total time => ")[1].split('\n')[0])
+        #         results[count][0].append([val, time])
+        # f.close()
+    return results
 
 def normalize(results) :
     # best_value = 0
@@ -168,7 +196,7 @@ def get_times(results) :
 # Params from metaheuristics
 
 # beam_search_hyperparams = [10, 25, 50, 100]
-beam_search_hyperparams = [10, 25, 50, 100]
+beam_search_hyperparams = [10, 25]
 
 sa_to = [500, 100, 50]
 sa_alpha = [0.95, 0.85, 0.7]
@@ -198,15 +226,15 @@ data_time_ga = pd.DataFrame()
 # results_sa = simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params)
 # results_grasp = grasp_train(grasp_best_elements, grasp_max_iteration, params)
 # results_ga = genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params)
-
 # Obtains data from txt file
 results_beam = readTrainResults("results/beam.csv", len(params))
 # results_sa = readTrainResults("results/SA.csv", len(params))
 # results_grasp = readTrainResults("results/GRASP.csv", len(params))
 # results_ga = readTrainResults("results/GA.csv", len(params))
+print(results_beam)
 
 # # Normalization of data
-results_beam = normalize(results_beam)
+# results_beam = normalize(results_beam)
 # results_sa = normalize(results_sa)
 # results_grasp = normalize(results_grasp)
 # results_ga = normalize(results_ga)

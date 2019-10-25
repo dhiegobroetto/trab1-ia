@@ -5,6 +5,8 @@ from random import shuffle
 import math
 import random
 import timeit
+import csv
+from collections import defaultdict
 
 def getValueState(VT, states) :
     total_value = 0
@@ -157,31 +159,29 @@ def grasp(VT, max_size, best_element, max_iteration, timer = 0) :
 
 def grasp_train(grasp_best_elements, grasp_max_iteration, params) :
     print("---- GRASP ----")
-    f = open("results/GRASP.txt", "w+")
-    i = 0
-    results_grasp = []
-    for best_element in grasp_best_elements :
-        for max_iteration in grasp_max_iteration :
-            results_grasp_param = []
-            f.write("Begin HP => %d, " % best_element)
-            f.write("%d\n" % max_iteration)
-            print("Begin HP => ", best_element, ", ", max_iteration)
-            for param in params :
-                start = timeit.default_timer()
-                state = grasp(param['vt'], param['t'], best_element, max_iteration, start)
-                stop = timeit.default_timer()
-                state_value = getValueState(param['vt'], state)
-                results_grasp_param.append({'value': state_value, 'time': (stop - start)})
-                f.write("(%d): " % i)
-                i+=1
-                f.write("Value => %d " % (state_value))
-                f.write(" Total time => %f\n" % (stop - start))
-                print("(",i,") Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
-        results_grasp.append([results_grasp_param.copy(), [best_element, max_iteration]])
-        results_grasp_param.clear()
-        i = 0
-        print("Finish HP => ", [best_element, max_iteration], " Result list => ", results_grasp)
-    f.close()
+    with open('results/GRASP.csv', mode='w') as csv_file:
+        fieldnames = ['hp', 'value', 'time']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        results_grasp = defaultdict(float)
+        writer.writeheader()
+        for best_element in grasp_best_elements :
+            for max_iteration in grasp_max_iteration :
+                print("Begin HP => ", best_element, ", ", max_iteration)
+                for param in params :
+
+                    start = timeit.default_timer()
+                    state = grasp(param['vt'], param['t'], best_element, max_iteration, start)
+                    stop = timeit.default_timer()
+
+                    state_value = getValueState(param['vt'], state)
+
+                    if [best_element, max_iteration] not in results_grasp :
+                        results_grasp[[best_element, max_iteration]] = []
+
+                    results_grasp[[best_element, max_iteration]].append([{'value': state_value, 'time': (stop - start)}])
+                    writer.writerow({'hp': [best_element, max_iteration], 'value': state_value, 'time': (stop - start)})
+                    print("Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
+            print("Finish HP => ", [best_element, max_iteration], " Result list => ", results_grasp)
     return results_grasp
 
 # ------ Program ------ #

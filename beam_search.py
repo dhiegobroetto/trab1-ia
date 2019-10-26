@@ -57,7 +57,6 @@ def addStateList(VT, states, T, states_list, queue_size) :
             if(len(states_list) < queue_size) :
                 addToList(VT, states, states_list)
             else :
-                sortList(states_list)
                 if(states_list[0][1] < getValueState(VT, states)) :
                     states_list.pop(0)
                     addToList(VT, states, states_list)

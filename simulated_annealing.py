@@ -45,7 +45,7 @@ def defineNeighborhood(VT, state, states_list, max_size) :
 def probabilityState(worst_case, state, t) :
     if (t < 0.1):
         return 0
-    p = 1 / math.exp(1) ** ((worst_case - state) / t)
+    p = 1 / math.exp((worst_case - state) / t)
     r = random.uniform(0, 1)
     return r < p
 

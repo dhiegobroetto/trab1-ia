@@ -91,7 +91,7 @@ def sortList(states_list) :
 def beam_search_train(beam_search_hyperparams, params) :
     print("---- Beam Search ----")
 
-    with open('results/beam.csv', mode='w') as csv_file:
+    with open('results/training/beam.csv', mode='w') as csv_file:
         fieldnames = ['hp', 'value', 'time']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         results_beam = defaultdict(float)

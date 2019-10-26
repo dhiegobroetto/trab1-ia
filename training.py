@@ -1,4 +1,5 @@
 from csv import DictReader
+from csv import DictWriter
 from beam_search import beam_search_train
 from simulated_annealing import simulated_annealing_train
 from grasp import grasp_train
@@ -154,10 +155,10 @@ data_time_ga = DataFrame()
 # results_ga = genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params)
 
 # Obtains data from csv file
-results_beam = readTrainResults("results/beam.csv")
-results_sa = readTrainResults("results/SA.csv")
-results_grasp = readTrainResults("results/GRASP.csv")
-results_ga = readTrainResults("results/GA.csv")
+results_beam = readTrainResults("results/training/beam.csv")
+results_sa = readTrainResults("results/training/SA.csv")
+results_grasp = readTrainResults("results/training/GRASP.csv")
+results_ga = readTrainResults("results/training/GA.csv")
 
 # Normalization of data
 results_beam = normalize(results_beam)
@@ -173,12 +174,35 @@ results_value_sa = get_values(results_sa)
 results_value_grasp = get_values(results_grasp)
 results_value_ga = get_values(results_ga)
 
-Getting values to DataFrame format
+# Getting values to DataFrame format
 data_value_beam = get_formatted_values(results_value_beam)
 data_value_sa = get_formatted_values(results_value_sa)
 data_value_grasp = get_formatted_values(results_value_grasp)
 data_value_ga = get_formatted_values(results_value_ga)
 
+
+# Getting best hyperparams from all algorithms
+beam_hp = data_value_beam.mean().sort_values(ascending=False).keys()[0]
+sa_hp = data_value_sa.mean().sort_values(ascending=False).keys()[0]
+grasp_hp = data_value_grasp.mean().sort_values(ascending=False).keys()[0]
+ga_hp = data_value_ga.mean().sort_values(ascending=False).keys()[0]
+
+# Printing hyperparams into csv file
+with open('results/hyperparams/training_results.csv', mode='w') as csv_file:
+    fieldnames = ['beam', 'sa', 'grasp', 'ga']
+    writer = DictWriter(csv_file, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerow({'beam': beam_hp, 
+                    'sa': sa_hp, 
+                    'grasp': grasp_hp, 
+                    'ga': ga_hp, })
+print("Results:")
+print("Beam Search: ", beam_hp)
+print("Simulated Annealing: ", sa_hp)
+print("GRASP: ", grasp_hp)
+print("Genetic Algorithm: ", ga_hp)
+
+# Boxplots of values
 boxplot(data = data_value_beam)
 title("Boxplot dos valores obtidos no treino da meta-heurística Beam Search")
 show()
@@ -206,6 +230,7 @@ data_time_sa = get_formatted_times(results_time_sa)
 data_time_grasp = get_formatted_times(results_time_grasp)
 data_time_ga = get_formatted_times(results_time_ga)
 
+# Boxplots of times
 boxplot(data = data_time_beam)
 title("Boxplot dos tempos obtidos no treino da meta-heurística Beam Search")
 show()

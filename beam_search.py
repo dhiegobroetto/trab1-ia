@@ -102,10 +102,11 @@ def beam_search_train(beam_search_hyperparams, params) :
                 state = beam_search(param['vt'], param['t'], beam_hp, start)
                 stop = timeit.default_timer()
                 state_value = getValueState(param['vt'], state)
-                if float(beam_hp) not in results_beam :
-                    results_beam[float(beam_hp)] = []
-                results_beam[float(beam_hp)].append([{'value': state_value, 'time': (stop - start)}])
-                writer.writerow({'hp': float(beam_hp), 'value': state_value, 'time': (stop - start)})
+                key = str([float(beam_hp)])
+                if key not in results_beam :
+                    results_beam[key] = []
+                results_beam[key].append([{'value': state_value, 'time': (stop - start)}])
+                writer.writerow({'hp': [float(beam_hp)], 'value': state_value, 'time': (stop - start)})
                 print("Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
             print("Finish HP => ", beam_hp, " Result list => ", results_beam)
     return results_beam

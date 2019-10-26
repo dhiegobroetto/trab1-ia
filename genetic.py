@@ -43,7 +43,7 @@ def getNegativeNeighbor(state, states_list) :
 
 def findBestState(VT, states, max_size) :
     total_value = 0
-    best_state = []
+    best_state = states[0]
     if(len(states) == 0) : return best_state
     for state in states :
         if(getValidState(VT, state[0], max_size)) :
@@ -141,7 +141,7 @@ def genetic(VT, max_size, population_size, k, max_iteration, crossover_ratio, mu
                 break
             population.append(state)
             if(len(population) > 1 ) :
-                population = [state for state in population if state[1] != 0 and getSizeState(VT, state[0]) <= max_size]
+                population = [state for state in population if len(state) != 0 and state[1] != 0 and getSizeState(VT, state[0]) <= max_size]
             if(len(population) < population_size) :
                 for _ in range(population_size - len(population)):
                     state = generateRandomState(VT, max_size)

@@ -58,8 +58,8 @@ def simulated_annealing(VT, max_size, t, alpha, max_iteration, timer = 0, time_l
     while(t > 0.001) :
         for _ in range(max_iteration) :
             defineNeighborhood(VT, iterate_state, states_list, max_size)
-            shuffle(states_list)
-            state = states_list.pop()
+            index = random.randint(0, len(states_list) -1)
+            state = states_list[index]
             if(max_size >= getSizeState(VT, state)):
                 if(getValueState(VT, state) > iterate_value) :
                     iterate_value = getValueState(VT, state)

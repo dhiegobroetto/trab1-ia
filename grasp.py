@@ -1,7 +1,6 @@
 # ----- Dhiego Santos Broetto ----- #
 # ---------- 2016204404 ----------- #
 
-from random import shuffle
 import math
 import random
 import timeit

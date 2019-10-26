@@ -89,7 +89,7 @@ def defineNeighborhood(VT, state, states_list) :
 
 # ------ Hill Climbing ------ #
 
-def hill_climbing_roulette(VT, max_size, states_list, best_element, timer) :
+def hill_climbing_roulette(VT, max_size, states_list, best_element, timer, time_limit) :
     best_value = 0
     best_state = [0] * len(VT)
     while(True) :
@@ -105,11 +105,11 @@ def hill_climbing_roulette(VT, max_size, states_list, best_element, timer) :
                 states_list.clear()
                 find_best = True
                 break
-            if timer != 0 and (timeit.default_timer() - timer) > 120 :
+            if timer != 0 and (timeit.default_timer() - timer) > time_limit :
                 break
         if not find_best :
             break
-        if timer != 0 and (timeit.default_timer() - timer) > 120 :
+        if timer != 0 and (timeit.default_timer() - timer) > time_limit :
             break
     return best_state
 
@@ -135,17 +135,17 @@ def deepest_descent(VT, T, best_state_trivial, states_list) :
 
 # ------ GRASP ------ #
 
-def greedy_random_construct(VT, max_size, states_list, best_element, timer) :
-    return hill_climbing_roulette(VT, max_size, states_list, best_element, timer)
+def greedy_random_construct(VT, max_size, states_list, best_element, timer, time_limit) :
+    return hill_climbing_roulette(VT, max_size, states_list, best_element, timer, time_limit)
 
-def grasp(VT, max_size, best_element, max_iteration, timer = 0) :
+def grasp(VT, max_size, best_element, max_iteration, timer = 0, time_limit = 0) :
     best_value = 0
     best_state = [0] * len(VT)
     states_list = []
     for i in range(max_iteration) :
-        state = greedy_random_construct(VT, max_size, states_list, best_element, timer)
-        if timer != 0 and (timeit.default_timer() - timer) > 120 :
-            print("GRASP exceeded time limit (120 seconds)\n")
+        state = greedy_random_construct(VT, max_size, states_list, best_element, timer, time_limit)
+        if timer != 0 and (timeit.default_timer() - timer) > time_limit :
+            print("GRASP exceeded time limit\n")
             break
         state_local = deepest_descent(VT, max_size, state, states_list)
         state_local_value = getValueState(VT, state_local)
@@ -153,14 +153,14 @@ def grasp(VT, max_size, best_element, max_iteration, timer = 0) :
             if state_local_value > best_value :
                 best_value = state_local_value
                 best_state = state_local
-        if timer != 0 and (timeit.default_timer() - timer) > 120 :
-            print("GRASP exceeded time limit (120 seconds)\n")
+        if timer != 0 and (timeit.default_timer() - timer) > time_limit :
+            print("GRASP exceeded time limit\n")
             break
     return best_state
 
-def grasp_train(grasp_best_elements, grasp_max_iteration, params) :
+def grasp_train(grasp_best_elements, grasp_max_iteration, params, filename, time_limit) :
     print("---- GRASP ----")
-    with open('results/training/GRASP.csv', mode='w') as csv_file:
+    with open(filename, mode='w') as csv_file:
         fieldnames = ['hp', 'value', 'time']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         results_grasp = defaultdict(float)
@@ -171,7 +171,7 @@ def grasp_train(grasp_best_elements, grasp_max_iteration, params) :
                 for param in params :
 
                     start = timeit.default_timer()
-                    state = grasp(param['vt'], param['t'], best_element, max_iteration, start)
+                    state = grasp(param['vt'], param['t'], int(best_element), int(max_iteration), start, time_limit)
                     stop = timeit.default_timer()
 
                     state_value = getValueState(param['vt'], state)

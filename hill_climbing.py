@@ -1,5 +1,8 @@
 # ----- Dhiego Santos Broetto ----- #
 # ---------- 2016204404 ----------- #
+import timeit
+from csv import DictWriter
+from collections import defaultdict
 
 def getValueState(VT, states) :
     total_value = 0
@@ -40,23 +43,35 @@ def findBestState(VT, states, T) :
         states[i] -= 1
     return best_index
 
-def hillClimbing(VT, states, T) :
+def hill_climbing(VT, T, timer, time_limit) :
     best_value = [(0, 0)]
+    states = [0] * len(VT)
     while(True) :
         if(not stateExpand(VT, states, T)) :
             return states
+        if timer != 0 and (timeit.default_timer() - timer) > time_limit :
+            print("Hill Climbing exceeded time limit\n")
+            break
 
-# Max size
-T = 19 
-# Objects array
-VT = [(1, 3), (4, 6), (5, 7)]
-
-# Hill Climbing
-states = [0] * len(VT)
-best_state = hillClimbing(VT, states, T)
-
-# Results
-total_value = getValueState(VT, best_state)
-total_size = getSizeState(VT, best_state)
-print("Hill Climbing")
-print ("[Total Value => ", total_value, ", Total Size => ", total_size, ", Best State => ", best_state)
+def hill_climbing_train(params, filename, time_limit) :
+    print("---- Hill Climbing ----")
+    with open(filename, mode='w') as csv_file:
+        fieldnames = ['hp', 'value', 'time']
+        writer = DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        results_hc = defaultdict(float)
+        count = 0
+        print("Begin HP => ", count)
+        for param in params :
+            start = timeit.default_timer()
+            state = hill_climbing(param['vt'], param['t'], start, time_limit)
+            stop = timeit.default_timer()
+            state_value = getValueState(param['vt'], state)
+            if float(count) not in results_hc :
+                results_hc[float(count)] = []
+            results_hc[float(count)].append([{'value': state_value, 'time': (stop - start)}])
+            writer.writerow({'hp': float(count), 'value': state_value, 'time': (stop - start)})
+            print("Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
+            count += 1
+        print("Finish HP => ", count, " Result list => ", results_hc)
+    return results_hc

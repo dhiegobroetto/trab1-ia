@@ -64,7 +64,7 @@ def addStateList(VT, states, T, states_list, queue_size) :
         states[i] -= 1
     sortList(states_list)
 
-def beam_search(VT, T, queue_size, timer = 0) :
+def beam_search(VT, T, queue_size, timer = 0, time_limit = 0) :
     states_list = []
     best_state = [0] * len(VT)
     addStateList(VT, best_state, T, states_list, queue_size)
@@ -73,8 +73,8 @@ def beam_search(VT, T, queue_size, timer = 0) :
         if(state[1] >= getValueState(VT, best_state)) :
             best_state = state[0].copy()
         addStateList(VT, state[0], T, states_list, queue_size)
-        if timer != 0 and (timeit.default_timer() - timer) > 120 :
-            print("Beam Search exceeded time limit (120 seconds)\n")
+        if timer != 0 and (timeit.default_timer() - timer) > time_limit :
+            print("Beam Search exceeded time limit\n")
             break
         
     return best_state
@@ -88,9 +88,9 @@ def addToList(VT, state, states_list) :
 def sortList(states_list) :
     states_list.sort(key = lambda pos: pos[1], reverse = False)
 
-def beam_search_train(beam_search_hyperparams, params) :
+def beam_search_train(beam_search_hyperparams, params, filename, time_limit) :
     print("---- Beam Search ----")
-    with open('results/training/beam.csv', mode='w') as csv_file:
+    with open(filename, mode='w') as csv_file:
         fieldnames = ['hp', 'value', 'time']
         writer = DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
@@ -99,7 +99,7 @@ def beam_search_train(beam_search_hyperparams, params) :
             print("Begin HP => ", beam_hp)
             for param in params :
                 start = timeit.default_timer()
-                state = beam_search(param['vt'], param['t'], beam_hp, start)
+                state = beam_search(param['vt'], param['t'], beam_hp, start, time_limit)
                 stop = timeit.default_timer()
                 state_value = getValueState(param['vt'], state)
                 if float(beam_hp) not in results_beam :

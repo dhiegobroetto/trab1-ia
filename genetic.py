@@ -74,7 +74,7 @@ def crossStates(state1, state2) :
     child2 = state2[0:middle_index] + state1[middle_index:len(state1)]
     return child1, child2
 
-def crossover(VT, states, crossover_ratio, timer = 0) :
+def crossover(VT, states, crossover_ratio, timer = 0, time_limit = 0) :
     for _ in range(round(len(states)/2)) :
         crossover_probability = random.uniform(0, 1)
         if(crossover_ratio >= crossover_probability) :
@@ -85,7 +85,7 @@ def crossover(VT, states, crossover_ratio, timer = 0) :
             states[state1][0], states[state2][0] = crossStates(states[state1][0], states[state2][0])
             states[state1][1] = getValueState(VT, states[state1][0])
             states[state2][1] = getValueState(VT, states[state2][0])
-        if timer != 0 and (timeit.default_timer() - timer) > 120 :
+        if timer != 0 and (timeit.default_timer() - timer) > time_limit :
             break
     return states
 
@@ -99,18 +99,18 @@ def mutateState(state) :
     state[value2] = aux
     return state
 
-def mutate(VT, states, mutation_ratio, timer) :
+def mutate(VT, states, mutation_ratio, timer = 0, time_limit = 0) :
     for _ in range(len(states)) :
         mutation_probability = random.uniform(0, 1)
         if(mutation_ratio >= mutation_probability) :
             state = random.randint(0, len(states) -1)
             states[state][0] = mutateState(states[state][0])
             states[state][1] = getValueState(VT, states[state][0])
-        if timer != 0 and (timeit.default_timer() - timer) > 120 :
+        if timer != 0 and (timeit.default_timer() - timer) > time_limit :
             break
     return states
 
-def genetic(VT, max_size, population_size, k, max_iteration, crossover_ratio, mutation_ratio, timer = 0):
+def genetic(VT, max_size, population_size, k, max_iteration, crossover_ratio, mutation_ratio, timer = 0, time_limit = 0):
     population = []
     best_solution = [0] * len(VT)
     best_state = []
@@ -119,25 +119,25 @@ def genetic(VT, max_size, population_size, k, max_iteration, crossover_ratio, mu
         state = generateRandomState(VT, max_size)
         value = getValueState(VT, state)
         population.append([state, value])
-        if timer != 0 and (timeit.default_timer() - timer) > 120 :
+        if timer != 0 and (timeit.default_timer() - timer) > time_limit :
             break
-    if timer != 0 and (timeit.default_timer() - timer) > 120 :
-        print("Genetic Algorithm exceeded time limit (120 seconds)\n")
+    if timer != 0 and (timeit.default_timer() - timer) > time_limit :
+        print("Genetic Algorithm exceeded time limit\n")
     else : 
-        for _ in range(max_iteration) :
+        for _ in range(int(max_iteration)) :
             sortList(population)
             state = population.pop()
             if(max_size >= getSizeState(VT, state[0])):
                 if(best_value < state[1]) :
                     best_state = state[0]
             population = tournamentSearch(VT, max_size, population, k)
-            population = crossover(VT, population, crossover_ratio, timer)
-            if timer != 0 and (timeit.default_timer() - timer) > 120 :
-                print("Genetic Algorithm exceeded time limit (120 seconds)\n")
+            population = crossover(VT, population, crossover_ratio, timer, time_limit)
+            if timer != 0 and (timeit.default_timer() - timer) > time_limit :
+                print("Genetic Algorithm exceeded time limit\n")
                 break
-            population = mutate(VT, population, mutation_ratio, timer)
-            if timer != 0 and (timeit.default_timer() - timer) > 120 :
-                print("Genetic Algorithm exceeded time limit (120 seconds)\n")
+            population = mutate(VT, population, mutation_ratio, timer, time_limit)
+            if timer != 0 and (timeit.default_timer() - timer) > time_limit :
+                print("Genetic Algorithm exceeded time limit\n")
                 break
             population.append(state)
             if(len(population) > 1 ) :
@@ -147,10 +147,10 @@ def genetic(VT, max_size, population_size, k, max_iteration, crossover_ratio, mu
                     state = generateRandomState(VT, max_size)
                     value = getValueState(VT, state)
                     population.append([state, value])
-                    if timer != 0 and (timeit.default_timer() - timer) > 120 :
+                    if timer != 0 and (timeit.default_timer() - timer) > time_limit :
                         break
-            if timer != 0 and (timeit.default_timer() - timer) > 120 :
-                print("Genetic Algorithm exceeded time limit (120 seconds)\n")
+            if timer != 0 and (timeit.default_timer() - timer) > time_limit :
+                print("Genetic Algorithm exceeded time limit\n")
                 break
     return best_state
 
@@ -181,9 +181,9 @@ def generateRandomState(VT, max_size) :
 def sortList(population) :
     population.sort(key = lambda pos: pos[1], reverse = False)
 
-def genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params) :
+def genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params, filename, time_limit) :
     print("---- Genetic Algorithm ----")
-    with open('results/training/GA.csv', mode='w') as csv_file:
+    with open(filename, mode='w') as csv_file:
         fieldnames = ['hp', 'value', 'time']
         writer = DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
@@ -194,7 +194,7 @@ def genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params) :
                     print("Begin HP => ", population, ", ", crossover, ", ", mutation)
                     for param in params :
                         start = timeit.default_timer()
-                        state = genetic(param['vt'], param['t'], population, 2, 100, crossover, mutation, start)
+                        state = genetic(param['vt'], param['t'], int(population), 2, 100, crossover, mutation, start, time_limit)
                         stop = timeit.default_timer()
                         state_value = getValueState(param['vt'], state)
                         key = str([float(population), float(crossover), float(mutation)])

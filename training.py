@@ -57,7 +57,6 @@ params = [
 ]
 
 def readTrainResults(filename) :
-    {'value': 1, 'time': 0.4}
     with open(filename, newline='') as csvfile:
         r = DictReader(csvfile)
         results = defaultdict(str)
@@ -83,8 +82,20 @@ def normalize(results) :
             results[key][i]['value'] /= best_value
             results[key][i]['time'] /= best_time
     for key in results :
+        total = 0
         results[key].sort(key = lambda pos: pos['value'], reverse = True)
+        for val in results[key] :
+            total += val['value']
+        results[key].insert(0, {'mean': ( total / len(results[key]) ) } )
     return results
+
+def ordered_results(results) :
+    res = []
+    for key in results :
+        res.append([results[key][0]['mean'], key, results[key]])
+        results[key][0].pop('mean')
+        res.sort(key = lambda pos: pos[0], reverse=True)
+    return res
 
 # ----- Values methods ----- #
 
@@ -96,11 +107,12 @@ def get_formatted_values(results) :
 
 def get_values(results) :
     values = []
-    for key in results :
+    for r1 in results :
         v = []
-        for r1 in results[key] :
-            v.append(r1['value'])
-        values.append([v, key])
+        for r2 in r1[2] :
+            if('value' in r2) :
+                v.append(r2['value'])
+        values.append([v, r1[1]])
     return values[:10]
 
 # ----- Times methods ----- #
@@ -113,11 +125,12 @@ def get_formatted_times(results) :
 
 def get_times(results) :
     values = []
-    for key in results :
+    for r1 in results :
         v = []
-        for r1 in results[key] :
-            v.append(r1['time'])
-        values.append([v, key])
+        for r2 in r1[2] :
+            if('time' in r2) :
+                v.append(r2['time'])
+        values.append([v, r1[1]])
     return values[:10]
 
 # ----- Main ----- #
@@ -149,12 +162,12 @@ data_time_grasp = DataFrame()
 data_time_ga = DataFrame()
 
 # Execution of meta-heuristics
-# results_beam = beam_search_train(beam_search_hyperparams, params)
-# results_sa = simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params)
-# results_grasp = grasp_train(grasp_best_elements, grasp_max_iteration, params)
-# results_ga = genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params)
+# results_beam = beam_search_train(beam_search_hyperparams, params, 'results/training/beam.csv', 120)
+# results_sa = simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params, 'results/training/SA.csv', 120)
+# results_grasp = grasp_train(grasp_best_elements, grasp_max_iteration, params, 'results/training/GRASP.csv', 120)
+# results_ga = genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params, 'results/training/GA.csv', 120)
 
-# Obtains data from csv file
+# # Obtains data from csv file
 results_beam = readTrainResults("results/training/beam.csv")
 results_sa = readTrainResults("results/training/SA.csv")
 results_grasp = readTrainResults("results/training/GRASP.csv")
@@ -166,20 +179,24 @@ results_sa = normalize(results_sa)
 results_grasp = normalize(results_grasp)
 results_ga = normalize(results_ga)
 
+ordered_beam = ordered_results(results_beam)
+ordered_sa = ordered_results(results_sa)
+ordered_grasp = ordered_results(results_grasp)
+ordered_ga = ordered_results(results_ga)
+
 # ------ Values ------ #
 
 # Getting values of results
-results_value_beam = get_values(results_beam)
-results_value_sa = get_values(results_sa)
-results_value_grasp = get_values(results_grasp)
-results_value_ga = get_values(results_ga)
+results_value_beam = get_values(ordered_beam)
+results_value_sa = get_values(ordered_sa)
+results_value_grasp = get_values(ordered_grasp)
+results_value_ga = get_values(ordered_ga)
 
-# Getting values to DataFrame format
+# # Getting values to DataFrame format
 data_value_beam = get_formatted_values(results_value_beam)
 data_value_sa = get_formatted_values(results_value_sa)
 data_value_grasp = get_formatted_values(results_value_grasp)
 data_value_ga = get_formatted_values(results_value_ga)
-
 
 # Getting best hyperparams from all algorithms
 beam_hp = data_value_beam.mean().sort_values(ascending=False).keys()[0]
@@ -202,7 +219,7 @@ print("Simulated Annealing: ", sa_hp)
 print("GRASP: ", grasp_hp)
 print("Genetic Algorithm: ", ga_hp)
 
-# Boxplots of values
+Boxplots of values
 boxplot(data = data_value_beam)
 title("Boxplot dos valores obtidos no treino da meta-heurística Beam Search")
 show()
@@ -219,10 +236,10 @@ show()
 # ------ Times ------ #
 
 # Getting times of results
-results_time_beam = get_times(results_beam)
-results_time_sa = get_times(results_sa)
-results_time_grasp = get_times(results_grasp)
-results_time_ga = get_times(results_ga)
+results_time_beam = get_times(ordered_beam)
+results_time_sa = get_times(ordered_sa)
+results_time_grasp = get_times(ordered_grasp)
+results_time_ga = get_times(ordered_ga)
 
 # Getting times to DataFrame format
 data_time_beam = get_formatted_times(results_time_beam)

@@ -43,17 +43,19 @@ def defineNeighborhood(VT, state, states_list, max_size) :
     getNegativeNeighbor(VT, state, states_list, max_size)
 
 def probabilityState(worst_case, state, t) :
+    if (t < 0.1):
+        return 0
     p = 1 / math.exp(1) ** ((worst_case - state) / t)
     r = random.uniform(0, 1)
     return r < p
 
-def simulated_annealing(VT, max_size, t, alpha, max_iteration, timer = 0) :
+def simulated_annealing(VT, max_size, t, alpha, max_iteration, timer = 0, time_limit = 0) :
     best_value = 0
     best_state = []
     states_list = []
     iterate_value = 0
     iterate_state = [0] * len(VT)
-    while(t >= 1) :
+    while(t > 0.001) :
         for _ in range(max_iteration) :
             defineNeighborhood(VT, iterate_state, states_list, max_size)
             shuffle(states_list)
@@ -70,17 +72,17 @@ def simulated_annealing(VT, max_size, t, alpha, max_iteration, timer = 0) :
                     if(probabilityState(getValueState(VT, state), getValueState(VT, iterate_state), t)) :
                         iterate_value = getValueState(VT, state)
                         iterate_state = state
-            if timer != 0 and (timeit.default_timer() - timer) > 120 :
+            if timer != 0 and (timeit.default_timer() - timer) > time_limit :
                 break
         t = alpha * t
-        if timer != 0 and (timeit.default_timer() - timer) > 120 :
-            print("Simulated Annealing exceeded time limit (120 seconds)\n")
+        if timer != 0 and (timeit.default_timer() - timer) > time_limit :
+            print("Simulated Annealing exceeded time limit\n")
             break
     return best_state
 
-def simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params) :
+def simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params, filename, time_limit) :
     print("---- Simulated Annealing ----")
-    with open('results/training/SA.csv', mode='w') as csv_file:
+    with open(filename, mode='w') as csv_file:
         fieldnames = ['hp', 'value', 'time']
         writer = DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
@@ -91,7 +93,7 @@ def simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params) :
                     print("Begin HP => ", to, ", ", alpha, ", ", max_iteration)
                     for param in params :
                         start = timeit.default_timer()
-                        state = simulated_annealing(param['vt'], param['t'], to, alpha, max_iteration, start)
+                        state = simulated_annealing(param['vt'], param['t'], to, alpha, int(max_iteration), start, time_limit)
                         stop = timeit.default_timer()
                         state_value = getValueState(param['vt'], state)
                         key = str([float(to), float(alpha), float(max_iteration)])

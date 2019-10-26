@@ -1,7 +1,7 @@
 # ----- Dhiego Santos Broetto ----- #
 # ---------- 2016204404 ----------- #
 import timeit
-import csv
+from csv import DictWriter
 from collections import defaultdict
 
 def getValueState(VT, states) :
@@ -90,12 +90,11 @@ def sortList(states_list) :
 
 def beam_search_train(beam_search_hyperparams, params) :
     print("---- Beam Search ----")
-
     with open('results/training/beam.csv', mode='w') as csv_file:
         fieldnames = ['hp', 'value', 'time']
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        results_beam = defaultdict(float)
+        writer = DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
+        results_beam = defaultdict(float)
         for beam_hp in beam_search_hyperparams :
             print("Begin HP => ", beam_hp)
             for param in params :
@@ -106,36 +105,7 @@ def beam_search_train(beam_search_hyperparams, params) :
                 if float(beam_hp) not in results_beam :
                     results_beam[float(beam_hp)] = []
                 results_beam[float(beam_hp)].append([{'value': state_value, 'time': (stop - start)}])
-                writer.writerow({'hp': beam_hp, 'value': state_value, 'time': (stop - start)})
+                writer.writerow({'hp': float(beam_hp), 'value': state_value, 'time': (stop - start)})
                 print("Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
             print("Finish HP => ", beam_hp, " Result list => ", results_beam)
     return results_beam
-
-# # Max size
-# T = 19 
-# # Objects array
-# VT = [(1, 3), (4, 6), (5, 7)]
-# T = 58
-# VT = [(1,3),(4,6),(5,7),(3,4),(8,10),(4,8),(3,5),(6,9)]
-
-# # Trivial solution
-# states = [0] * len(VT)
-# best_state_trivial = hillClimbing(VT, states, T)
-
-# # Beam search
-# states_list = []
-# queue_size = 3
-# best_state_beam = beam_search(VT, T, queue_size)
-
-# # Results
-# total_value_trivial = getValueState(VT, best_state_trivial)
-# total_size_trivial = getSizeState(VT, best_state_trivial)
-
-# total_value_beam = getValueState(VT, best_state_beam)
-# total_size_beam = getSizeState(VT, best_state_beam)
-
-# print("Trivial Solution")
-# print ("[Total Value => ", total_value_trivial, ", Total Size => ", total_size_trivial, ", Best State => ", best_state_trivial)
-
-# print("Beam Search")
-# print ("[Total Value => ", total_value_beam, ", Total Size => ", total_size_beam, ", Best State => ", best_state_beam)

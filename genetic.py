@@ -5,6 +5,8 @@ from random import shuffle
 import math
 import random
 import timeit
+from csv import DictWriter
+from collections import defaultdict
 
 def getValueState(VT, states) :
     total_value = 0
@@ -181,53 +183,25 @@ def sortList(population) :
 
 def genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params) :
     print("---- Genetic Algorithm ----")
-    f = open("results/GA.txt", "w+")
-    i = 0
-    results_ga = []
-    for population in ga_population :
-        for crossover in ga_crossover :
-            for mutation in ga_mutation :
-                results_ga_param = []
-                f.write("Begin HP => %d, " % population)
-                f.write("%f, " % crossover)
-                f.write("%f\n" % mutation)
-                print("Begin HP => ", population, ", ", crossover, ", ", mutation)
-                for param in params :
-                    start = timeit.default_timer()
-                    state = genetic(param['vt'], param['t'], population, 2, 100, crossover, mutation, start)
-                    stop = timeit.default_timer()
-                    state_value = getValueState(param['vt'], state)
-                    results_ga_param.append({'value': state_value, 'time': (stop - start)})
-                    f.write("(%d): " % i)
-                    i+=1
-                    f.write("Value => %d " % (state_value))
-                    f.write(" Total time => %f\n" % (stop - start))
-                    print("(",i,") Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
-            results_ga.append([results_ga_param.copy(), [population, crossover, mutation]])
-            results_ga_param.clear()
-            i = 0
+    with open('results/training/GA.csv', mode='w') as csv_file:
+        fieldnames = ['hp', 'value', 'time']
+        writer = DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        results_ga = defaultdict(float)
+        for population in ga_population :
+            for crossover in ga_crossover :
+                for mutation in ga_mutation :
+                    print("Begin HP => ", population, ", ", crossover, ", ", mutation)
+                    for param in params :
+                        start = timeit.default_timer()
+                        state = genetic(param['vt'], param['t'], population, 2, 100, crossover, mutation, start)
+                        stop = timeit.default_timer()
+                        state_value = getValueState(param['vt'], state)
+                        key = str([float(population), float(crossover), float(mutation)])
+                        if key not in results_ga :
+                            results_ga[key] = []
+                        results_ga[key].append([{'value': state_value, 'time': (stop - start)}])
+                        writer.writerow({'hp': [float(population), float(crossover), float(mutation)], 'value': state_value, 'time': (stop - start)})
+                        print("Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
         print("Finish HP => ", [population, crossover, mutation], " Result list => ", results_ga)
-    f.close()
     return results_ga
-
-# # Max size
-# max_size = 58
-# # Object array
-# VT = [(1, 3), (4, 6), (5, 7)]
-# population_size = 10
-
-# max_iteration = 10000
-# crossover_ratio = 0.75
-# mutation_ratio = 0.10
-# k = 2
-
-# # Genetic
-# states_list = []
-# best_genetic = genetic(VT, max_size, population_size, k, max_iteration, crossover_ratio, mutation_ratio)
-
-# # Results
-# total_value_genetic = best_genetic[1]
-# total_size_genetic = getSizeState(VT, best_genetic[0])
-
-# print("Genetic Algorithm")
-# print ("[Total Value => ", total_value_genetic, ", Total Size => ", total_size_genetic, ", Best State => ", best_genetic)

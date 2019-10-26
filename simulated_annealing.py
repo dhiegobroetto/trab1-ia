@@ -5,6 +5,8 @@ from random import shuffle
 import math
 import random
 import timeit
+from csv import DictWriter
+from collections import defaultdict
 
 def getValueState(VT, states) :
     total_value = 0
@@ -78,50 +80,25 @@ def simulated_annealing(VT, max_size, t, alpha, max_iteration, timer = 0) :
 
 def simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params) :
     print("---- Simulated Annealing ----")
-    f = open("results/SA.txt", "w+")
-    i = 0
-    results_sa = []
-    for to in sa_to :
-        for alpha in sa_alpha :
-            for max_iteration in sa_max_iteration :
-                results_sa_param = []
-                f.write("Begin HP => %d, " % to)
-                f.write("%f, " % alpha)
-                f.write("%d\n" %  max_iteration)
-                print("Begin HP => ", to, ", ", alpha, ", ", max_iteration)
-                for param in params :
-                    start = timeit.default_timer()
-                    state = simulated_annealing(param['vt'], param['t'], to, alpha, max_iteration, start)
-                    stop = timeit.default_timer()
-                    state_value = getValueState(param['vt'], state)
-                    results_sa_param.append({'value': state_value, 'time': (stop - start)})
-                    f.write("(%d): " % i)
-                    i+=1
-                    f.write("Value => %d " % (state_value))
-                    f.write(" Total time => %f\n" % (stop - start))
-                    print("(",i,") Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
-            results_sa.append([results_sa_param.copy(), [to, alpha, max_iteration]])
-            results_sa_param.clear()
-            i = 0
-        print("Finish HP => ", [to, alpha, max_iteration], " Result list => ", results_sa)
-    f.close()
+    with open('results/training/SA.csv', mode='w') as csv_file:
+        fieldnames = ['hp', 'value', 'time']
+        writer = DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        results_sa = defaultdict(float)
+        for to in sa_to :
+            for alpha in sa_alpha :
+                for max_iteration in sa_max_iteration :
+                    print("Begin HP => ", to, ", ", alpha, ", ", max_iteration)
+                    for param in params :
+                        start = timeit.default_timer()
+                        state = simulated_annealing(param['vt'], param['t'], to, alpha, max_iteration, start)
+                        stop = timeit.default_timer()
+                        state_value = getValueState(param['vt'], state)
+                        key = str([float(to), float(alpha), float(max_iteration)])
+                        if key not in results_sa :
+                            results_sa[key] = []
+                        results_sa[key].append([{'value': state_value, 'time': (stop - start)}])
+                        writer.writerow({'hp': [float(to), float(alpha), float(max_iteration)], 'value': state_value, 'time': (stop - start)})
+                        print("Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
+            print("Finish HP => ", [to, alpha, max_iteration], " Result list => ", results_sa)
     return results_sa
-
-# # Max size
-# max_size = 19 
-# # Object array
-# VT = [(1, 3), (4, 6), (5, 7)]
-# t = 100
-# alpha = 0.5
-# max_iteration = 40
-
-# # Simulated Annealing
-# states_list = []
-# best_simulated_annealing = simulated_annealing(VT, max_size, t, alpha, max_iteration)
-
-# # Results
-# total_value_simple = getValueState(VT, best_simulated_annealing)
-# total_size_simple = getSizeState(VT, best_simulated_annealing)
-
-# print("Simulated Annealing")
-# print ("[Total Value => ", total_value_simple, ", Total Size => ", total_size_simple, ", Best State => ", best_simulated_annealing)

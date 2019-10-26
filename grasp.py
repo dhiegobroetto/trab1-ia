@@ -6,6 +6,7 @@ import math
 import random
 import timeit
 import csv
+from csv import DictWriter
 from collections import defaultdict
 
 def getValueState(VT, states) :
@@ -159,7 +160,7 @@ def grasp(VT, max_size, best_element, max_iteration, timer = 0) :
 
 def grasp_train(grasp_best_elements, grasp_max_iteration, params) :
     print("---- GRASP ----")
-    with open('results/GRASP.csv', mode='w') as csv_file:
+    with open('results/training/GRASP.csv', mode='w') as csv_file:
         fieldnames = ['hp', 'value', 'time']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         results_grasp = defaultdict(float)
@@ -175,33 +176,11 @@ def grasp_train(grasp_best_elements, grasp_max_iteration, params) :
 
                     state_value = getValueState(param['vt'], state)
 
-                    if [best_element, max_iteration] not in results_grasp :
-                        results_grasp[[best_element, max_iteration]] = []
-
-                    results_grasp[[best_element, max_iteration]].append([{'value': state_value, 'time': (stop - start)}])
-                    writer.writerow({'hp': [best_element, max_iteration], 'value': state_value, 'time': (stop - start)})
+                    key = str([float(best_element), float(max_iteration)])
+                    if key not in results_grasp :
+                        results_grasp[key] = []
+                    results_grasp[key].append([{'value': state_value, 'time': (stop - start)}])
+                    writer.writerow({'hp': [float(best_element), float(max_iteration)], 'value': state_value, 'time': (stop - start)})
                     print("Value =>", state_value, " Total time => ", stop - start, " Params: (", param['vt'], param['t'], ")")
             print("Finish HP => ", [best_element, max_iteration], " Result list => ", results_grasp)
     return results_grasp
-
-# ------ Program ------ #
-
-# # Max size
-# max_size = 19
-# # Max iteration
-# max_iteration = 50
-# best_element = 2
-# # Object array
-# VT = [(1, 3), (4, 6), (5, 7)]
-# VT = [(1,3),(4,6),(5,7),(3,4), (2,6), (2,3), (6,8), (1,2),(3,5),(7,10),(10,15),(13,20),(24,25),(29,37)]
-# max_size = 13890000
-# states_list = []
-#
-# best_state_grasp = grasp(VT, max_size, best_element, max_iteration, timeit.default_timer())
-#
-# # Results
-# total_value_grasp = getValueState(VT, best_state_grasp)
-# total_size_grasp = getSizeState(VT, best_state_grasp)
-#
-# print("GRASP")
-# print ("[Total Value => ", total_value_grasp, ", Total Size => ", total_size_grasp, ", Best State => ", best_state_grasp)

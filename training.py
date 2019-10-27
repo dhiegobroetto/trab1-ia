@@ -162,10 +162,10 @@ data_time_grasp = DataFrame()
 data_time_ga = DataFrame()
 
 # Execution of meta-heuristics
-# results_beam = beam_search_train(beam_search_hyperparams, params, 'results/training/beam.csv', 120)
-# results_sa = simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params, 'results/training/SA.csv', 120)
-# results_grasp = grasp_train(grasp_best_elements, grasp_max_iteration, params, 'results/training/GRASP.csv', 120)
-# results_ga = genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params, 'results/training/GA.csv', 120)
+results_beam = beam_search_train(beam_search_hyperparams, params, 'results/training/beam.csv', 120)
+results_sa = simulated_annealing_train(sa_to, sa_alpha, sa_max_iteration, params, 'results/training/SA.csv', 120)
+results_grasp = grasp_train(grasp_best_elements, grasp_max_iteration, params, 'results/training/GRASP.csv', 120)
+results_ga = genetic_algorithm_train(ga_population, ga_crossover, ga_mutation, params, 'results/training/GA.csv', 120)
 
 # # Obtains data from csv file
 results_beam = readTrainResults("results/training/beam.csv")
@@ -219,7 +219,7 @@ print("Simulated Annealing: ", sa_hp)
 print("GRASP: ", grasp_hp)
 print("Genetic Algorithm: ", ga_hp)
 
-Boxplots of values
+# Boxplots of values
 boxplot(data = data_value_beam)
 title("Boxplot dos valores obtidos no treino da meta-heurística Beam Search")
 show()

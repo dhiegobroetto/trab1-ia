@@ -205,15 +205,15 @@ rank_ga = 0
 for prob in probs :
     for i in range(len(prob)) :
         if 'hc' in prob[i] :
-            rank_hc += i
+            rank_hc += i + 1
         if 'beam' in prob[i] :
-            rank_beam += i
+            rank_beam += i + 1
         if 'sa' in prob[i] :
-            rank_sa += i
+            rank_sa += i + 1
         if 'grasp' in prob[i] :
-            rank_grasp += i
+            rank_grasp += i + 1
         if 'ga' in prob[i] :
-            rank_ga += i
+            rank_ga += i + 1
 
 rank_hc /= len(rank_abs)
 rank_beam /= len(rank_abs)

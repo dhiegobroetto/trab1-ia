@@ -197,7 +197,6 @@ rank_abs['ga'] = value_ga
 probs = []
 for i in range(len(rank_abs)) :
     probs.append(rank_abs.loc[[i]].sort_values(by=i, axis=1, ascending = False).columns.values.tolist())
-print(probs)
 rank_hc = 0
 rank_beam = 0
 rank_sa = 0
@@ -276,11 +275,11 @@ norm_values['GRASP'] = norm_grasp['value']
 norm_values['Genetic Algorithm'] = norm_ga['value']
 
 norm_times = DataFrame()
-norm_times['Hill Climbing'] = norm_hc['time']
-norm_times['Beam Search'] = norm_beam['time']
-norm_times['Simulated Annealing'] = norm_sa['time']
-norm_times['GRASP'] = norm_grasp['time']
-norm_times['Genetic Algorithm'] = norm_ga['time']
+norm_times['Hill Climbing'] = norm_time_hc['time']
+norm_times['Beam Search'] = norm_time_beam['time']
+norm_times['Simulated Annealing'] = norm_time_sa['time']
+norm_times['GRASP'] = norm_time_grasp['time']
+norm_times['Genetic Algorithm'] = norm_time_ga['time']
 
 # Boxplots of values
 boxplot(data = norm_values)

@@ -57,8 +57,8 @@ def addStateList(VT, states, T, states_list, queue_size) :
             if(len(states_list) < queue_size) :
                 addToList(VT, states, states_list)
             else :
-                if(states_list[0][1] < getValueState(VT, states)) :
-                    states_list.pop(0)
+                if(states_list[len(states_list) - 1][1] < getValueState(VT, states)) :
+                    states_list.pop(len(states_list) - 1)
                     addToList(VT, states, states_list)
         states[i] -= 1
     sortList(states_list)
@@ -67,7 +67,12 @@ def beam_search(VT, T, queue_size, timer = 0, time_limit = 0) :
     states_list = []
     best_state = [0] * len(VT)
     addStateList(VT, best_state, T, states_list, queue_size)
-    while(states_list != []) :
+    while(len(states_list) > 0) :
+        states_list.sort(key = lambda val: val[1], reverse=True)
+        states_size = len(states_list) - 1
+        if states_size > queue_size : size = queue_size 
+        else : size = states_size + 1
+        states_list = states_list[:(size)]
         state = states_list.pop()
         if(state[1] >= getValueState(VT, best_state)) :
             best_state = state[0].copy()

@@ -28,30 +28,23 @@ def getValidState(VT, states, max_size) :
 
 # ------ Roulette ------ #
 
-def roulette(VT, states, best_element) :
+def roulette(VT, states) :
     total = 0
-    states_aux = states.copy()
-
-    for i in range(len(states_aux)) :
-        states_aux[i] = [states_aux[i], getValueState(VT, states_aux[i])]
-    states_aux.sort(key = lambda pos: pos[1], reverse = True)
-    states_best = states_aux[0:best_element].copy()
-    for i in range(len(states_best)) :
-        states_best[i] = states_best[i][0]
-
+    states_best = states.copy()
     for i in range(0, len(states_best)) :
         total += getValueState(VT, states_best[i])
     
+    states_roulette = []
     for i in range(0, len(states_best)) :
-        states_aux.append([states_best[i],(getValueState(VT, states_best[i]) / total)])
-    sortList(states_aux)
+        states_roulette.append([states_best[i],(getValueState(VT, states_best[i]) / total)])
+    sortList(states_roulette)
     
     rand = random.uniform(0, 1)
     percent = 0
-    for i in range(0, len(states_aux)) :
-        if rand <= (states_aux[i][1] + percent) :
-            return states_aux[i][0]
-        percent += states_aux[i][1]
+    for i in range(0, len(states_roulette)) :
+        if rand <= (states_roulette[i][1] + percent) :
+            return states_roulette[i][0]
+        percent += states_roulette[i][1]
     return -1
 
 def sortList(list) :
@@ -59,15 +52,16 @@ def sortList(list) :
 
 # ------ Neighborhood ------ #
 
-def getValidPositiveNeighbor(VT, state, states_list, max_size) :
+def getValidPositiveNeighbor(VT, state, max_size) :
+    states_list = []
     for i in range(0, len(state)):
         state_aux = state.copy()
         state_aux[i] += 1
-        if getSizeState(VT, state_aux) <= round(max_size/2) :
-            states_list.append(state_aux)
+        states_list.append(state_aux)
+    return states_list
 
-def defineValidNeighborhood(VT, state, states_list, max_size) :
-    getValidPositiveNeighbor(VT, state, states_list, max_size)
+def defineValidNeighborhood(VT, state, max_size) :
+    return getValidPositiveNeighbor(VT, state, max_size)
 
 def getPositiveNeighbor(state, states_list) :
     for i in range(0, len(state)):
@@ -92,22 +86,16 @@ def hill_climbing_roulette(VT, max_size, states_list, best_element, timer, time_
     best_value = 0
     best_state = [0] * len(VT)
     while(True) :
-        find_best = False
-        defineValidNeighborhood(VT, best_state, states_list, max_size)
-        while(len(states_list) > 0) :
-            state = roulette(VT, states_list, best_element)
-            states_list.remove(state)
-            state_value = getValueState(VT, state)
+        states_list = defineValidNeighborhood(VT, best_state, max_size)
+        states_list.sort(key = lambda state: getValueState(VT, state), reverse = True)
+        state = roulette(VT, states_list[0:best_element])
+        state_value = getValueState(VT, state)
+        if getSizeState(VT, state) <= round(max_size/2) :
             if state_value > best_value :
                 best_value = state_value
                 best_state = state
-                states_list.clear()
-                find_best = True
-                break
-            if timer != 0 and (timeit.default_timer() - timer) > time_limit :
-                break
-        if not find_best :
-            break
+        else :
+            return best_state
         if timer != 0 and (timeit.default_timer() - timer) > time_limit :
             break
     return best_state
@@ -133,19 +121,18 @@ def deepest_descent(VT, T, best_state_trivial, states_list) :
     return best_state
 
 # ------ GRASP ------ #
-
 def greedy_random_construct(VT, max_size, states_list, best_element, timer, time_limit) :
     return hill_climbing_roulette(VT, max_size, states_list, best_element, timer, time_limit)
 
 def grasp(VT, max_size, best_element, max_iteration, timer = 0, time_limit = 0) :
     best_value = 0
     best_state = [0] * len(VT)
-    states_list = []
+    states_list = [[0] * len(VT)]
     for i in range(max_iteration) :
         state = greedy_random_construct(VT, max_size, states_list, best_element, timer, time_limit)
         if timer != 0 and (timeit.default_timer() - timer) > time_limit :
             print("GRASP exceeded time limit\n")
-            break
+            return state
         state_local = deepest_descent(VT, max_size, state, states_list)
         state_local_value = getValueState(VT, state_local)
         if getSizeState(VT, state_local) <= max_size :
@@ -154,7 +141,7 @@ def grasp(VT, max_size, best_element, max_iteration, timer = 0, time_limit = 0) 
                 best_state = state_local
         if timer != 0 and (timeit.default_timer() - timer) > time_limit :
             print("GRASP exceeded time limit\n")
-            break
+            return best_state
     return best_state
 
 def grasp_train(grasp_best_elements, grasp_max_iteration, params, filename, time_limit) :

@@ -67,32 +67,32 @@ def normalize(results) :
     return results
 
 
-# with open('results/hyperparams/training_results.csv', newline='') as csvfile:
-#     r = DictReader(csvfile)
-#     results = defaultdict(str)
-#     for l in r :
-#         beam_hp = l['beam']
-#         sa_hp = l['sa']
-#         grasp_hp = l['grasp']
-#         ga_hp = l['ga']
+with open('results/hyperparams/training_results.csv', newline='') as csvfile:
+    r = DictReader(csvfile)
+    results = defaultdict(str)
+    for l in r :
+        beam_hp = l['beam']
+        sa_hp = l['sa']
+        grasp_hp = l['grasp']
+        ga_hp = l['ga']
 
-# hp = beam_hp.split('[')[1].split(']')[0].split(', ')
-# beam_hp = [float(num) for num in hp]
+hp = beam_hp.split('[')[1].split(']')[0].split(', ')
+beam_hp = [float(num) for num in hp]
 
-# hp = sa_hp.split('[')[1].split(']')[0].split(', ')
-# sa_hp = [float(num) for num in hp]
+hp = sa_hp.split('[')[1].split(']')[0].split(', ')
+sa_hp = [float(num) for num in hp]
 
-# hp = grasp_hp.split('[')[1].split(']')[0].split(', ')
-# grasp_hp = [float(num) for num in hp]
+hp = grasp_hp.split('[')[1].split(']')[0].split(', ')
+grasp_hp = [float(num) for num in hp]
 
-# hp = ga_hp.split('[')[1].split(']')[0].split(', ')
-# ga_hp = [float(num) for num in hp]
+hp = ga_hp.split('[')[1].split(']')[0].split(', ')
+ga_hp = [float(num) for num in hp]
 
-# results_hc = hill_climbing_train(params, 'results/test/HC.csv', 300)
-# results_beam = beam_search_train(beam_hp, params, 'results/test/beam.csv', 300)
-# results_sa = simulated_annealing_train([sa_hp[0]], [sa_hp[1]], [sa_hp[2]], params, 'results/test/SA.csv', 300)
-# results_grasp = grasp_train([grasp_hp[0]], [grasp_hp[1]], params, 'results/test/GRASP.csv', 300)
-# results_ga = genetic_algorithm_train([ga_hp[0]], [ga_hp[1]], [ga_hp[2]], params, 'results/test/GA.csv', 300)
+results_hc = hill_climbing_train(params, 'results/test/HC.csv', 300)
+results_beam = beam_search_train(beam_hp, params, 'results/test/beam.csv', 300)
+results_sa = simulated_annealing_train([sa_hp[0]], [sa_hp[1]], [sa_hp[2]], params, 'results/test/SA.csv', 300)
+results_grasp = grasp_train([grasp_hp[0]], [grasp_hp[1]], params, 'results/test/GRASP.csv', 300)
+results_ga = genetic_algorithm_train([ga_hp[0]], [ga_hp[1]], [ga_hp[2]], params, 'results/test/GA.csv', 300)
 
 results_hc = read_csv('results/test/HC.csv', delimiter = ',')
 results_beam = read_csv('results/test/beam.csv', delimiter = ',')
@@ -187,7 +187,6 @@ with open("results/test/results_table.csv", mode='w') as csv_file:
             ]
         }
     )
-# results_table = read_csv('results/test/results_table.csv', delimiter = ',')
 
 rank_abs = DataFrame()
 rank_abs['hc'] = value_hc
@@ -198,6 +197,7 @@ rank_abs['ga'] = value_ga
 probs = []
 for i in range(len(rank_abs)) :
     probs.append(rank_abs.loc[[i]].sort_values(by=i, axis=1, ascending = False).columns.values.tolist())
+print(probs)
 rank_hc = 0
 rank_beam = 0
 rank_sa = 0
@@ -282,7 +282,6 @@ norm_times['Simulated Annealing'] = norm_sa['time']
 norm_times['GRASP'] = norm_grasp['time']
 norm_times['Genetic Algorithm'] = norm_ga['time']
 
-
 # Boxplots of values
 boxplot(data = norm_values)
 title("Boxplot dos valores obtidos no teste de cada meta-heurística")
@@ -290,34 +289,3 @@ show()
 boxplot(data = norm_times)
 title("Boxplot dos tempos obtidos no teste de cada meta-heurística")
 show()
-# boxplot(data = norm_beam['value'])
-# title("Boxplot dos valores obtidos no treino da meta-heurística Beam Search")
-# show()
-# boxplot(data = norm_sa['value'])
-# title("Boxplot dos valores obtidos no treino da meta-heurística Simulated Annealing")
-# show()
-# boxplot(data = norm_grasp['value'])
-# title("Boxplot dos valores obtidos no treino da meta-heurística GRASP")
-# show()
-# boxplot(data = norm_ga['value'])
-# title("Boxplot dos valores obtidos no treino da meta-heurística Algoritmo Genético")
-# show()
-
-# # ------ Times ------ #
-
-# # Boxplots of times
-# boxplot(data = norm_hc['time'])
-# title("Boxplot dos tempos obtidos no treino da meta-heurística Hill Climbing")
-# show()
-# boxplot(data = norm_beam['time'])
-# title("Boxplot dos tempos obtidos no treino da meta-heurística Beam Search")
-# show()
-# boxplot(data = norm_sa['time'])
-# title("Boxplot dos tempos obtidos no treino da meta-heurística Simulated Annealing")
-# show()
-# boxplot(data = norm_grasp['time'])
-# title("Boxplot dos tempos obtidos no treino da meta-heurística GRASP")
-# show()
-# boxplot(data = norm_ga['time'])
-# title("Boxplot dos tempos obtidos no treino da meta-heurística Algoritmo Genético")
-# show()

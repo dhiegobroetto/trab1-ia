@@ -192,7 +192,7 @@ results_value_sa = get_values(ordered_sa)
 results_value_grasp = get_values(ordered_grasp)
 results_value_ga = get_values(ordered_ga)
 
-# # Getting values to DataFrame format
+# Getting values to DataFrame format
 data_value_beam = get_formatted_values(results_value_beam)
 data_value_sa = get_formatted_values(results_value_sa)
 data_value_grasp = get_formatted_values(results_value_grasp)
